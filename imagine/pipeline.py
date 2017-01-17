@@ -8,15 +8,18 @@ from likelihoods import Likelihood
 from observers import Observer
 from priors import Prior
 
+from carrier_mapper import carrier_mapper
+
 
 class Pipeline(Loggable, object):
-    def __init__(self, observer, likelihood, prior,
-                 parameters=[], ensemble_size=1):
+    def __init__(self, observer, likelihood, prior, ensemble_size=1,
+                 active_parameters=[], parameter_mapping={}):
         self.logger.debug("Setting up pipeline.")
         self.observer = observer
         self.likelihood = likelihood
         self.prior = prior
-        self.parameters = parameters
+        self.active_parameters = active_parameters
+        self.parameter_mapping = parameter_mapping
         self.ensemble_size = ensemble_size
 
     @property
@@ -51,23 +54,24 @@ class Pipeline(Loggable, object):
                 "prior must be an instance of prior-class.")
 
     @property
-    def parameters(self):
-        return self._parameters
+    def parameter_mapping(self):
+        return self._parameter_mapping
 
-    @parameters.setter
-    def parameters(self, parameters):
+    @parameter_mapping.setter
+    def parameter_mapping(self, parameters):
         """
-        parameters is either a list of the parameter-names, or a list of lists
-        containing [parameter-name, min, max, mean]
+        The parameter-mapping must be a dictionary with
+        key: parameter-name
+        value: [min, mean, max]
         """
-        new_parameters = []
+        new_mapping = {}
         for p in parameters:
-            if isinstance(p, list):
-                new_parameters += [[str(p[0]), p[1], p[2], p[3]]]
-            else:
-                new_parameters += [[str(p), None, None, None]]
-        self.logger.debug("Setting parameters to %s." % str(new_parameters))
-        self._parameters = new_parameters
+            new_key = str(p[0])
+            new_value = [p[1], p[2], p[3]]
+            new_mapping[new_key] = new_value
+            self.logger.debug("Setting parameter_mapping %s to %s." %
+                              (new_key, new_mapping[new_key]))
+        self._parameter_mapping = new_mapping
 
     @property
     def ensemble_size(self):
@@ -82,52 +86,19 @@ class Pipeline(Loggable, object):
         self.logger.debug("Setting ensemble size to %i." % ensemble_size)
         self._ensemble_size = ensemble_size
 
-    @staticmethod
-    def carrier_mapper(x, a=-np.inf, b=np.inf, m=0):
-        """
-        Maps x from [-inf, inf] into the interval [a, b], where x=0 -> m
-        """
-
-        if a == -np.inf and b == np.inf and m == 0:
-            return x
-
-        x = np.float(x)
-        a = np.float(a)
-        b = np.float(b)
-        if m is None:
-            if a == -np.inf and b == np.inf:
-                m = 0
+    def _map_parameters(self, parameter_list):
+        parameter_dict = {}
+        for i, name in enumerate(self.active_parameters):
+            if name in self.parameter_mapping:
+                mapping = self.parameter_mapping[name]
+                mapped_parameter = carrier_mapper(parameter_list[i],
+                                                  a=mapping[1],
+                                                  m=mapping[2],
+                                                  b=mapping[3])
             else:
-                m = a + (b-a)/2.
-        else:
-            m = np.float(m)
-
-        # map x from [-inf, inf] to [0, 1]
-        y = np.arctan(x)/np.pi + 0.5
-        # compute where m would lie in [0, 1]
-        n = (m - a)/(b - a)
-        # strech y, such that x=0 -> n
-        y = y**np.emath.logn(0.5, n)
-        # strech y to the interval [a,b]
-        y = y*(b-a) + a
-        return y
+                mapped_parameter = np.float(parameter_list[i])
+            parameter_dict[name] = mapped_parameter
+        return parameter_dict
 
     def __call__(self, parameter_list):
-        parameter_dict = {}
-        for (i, p) in enumerate(self.parameters):
-            parameter_dict[p[0]] = self.carrier_mapper(parameter_list[i],
-                                                       a=p[1],
-                                                       b=p[2],
-                                                       m=p[3])
-
-
-
-
-
-
-
-
-
-
-
-
+        mapped_parameters = self._map_parameters(parameter_list)
