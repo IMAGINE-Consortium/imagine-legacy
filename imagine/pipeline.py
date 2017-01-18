@@ -1,25 +1,33 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-
 from keepers import Loggable
 
 from likelihoods import Likelihood
+from magnetic_fields import MagneticFieldFactory
 from observers import Observer
 from priors import Prior
 
-from carrier_mapper import carrier_mapper
-
 
 class Pipeline(Loggable, object):
-    def __init__(self, observer, likelihood, prior, ensemble_size=1,
-                 active_parameters=[], parameter_mapping={}):
+    """
+    The pipeline
+    - posses all the building blocks: magnetic_field, observer,
+        likelihood and prior.
+    - if multiple log-likelihoods and log-priors are given: sum the result
+    - coordinates the repeated observation in order to compute an ensemble
+    - controls which parameters of the magnetic field are tested
+        (active parameters)
+
+
+    """
+    def __init__(self, magnetic_field_factory, observer, likelihood, prior,
+                 active_variables=[], ensemble_size=1):
         self.logger.debug("Setting up pipeline.")
+        self.magnetic_field_factory = magnetic_field_factory
         self.observer = observer
         self.likelihood = likelihood
         self.prior = prior
-        self.active_parameters = active_parameters
-        self.parameter_mapping = parameter_mapping
+        self.active_variables = active_variables
         self.ensemble_size = ensemble_size
 
     @property
@@ -41,7 +49,10 @@ class Pipeline(Loggable, object):
     def likelihood(self, likelihood):
         if not isinstance(likelihood, Likelihood):
             raise TypeError(
-                "likelihood must be an instance of likelihood-class.")
+                "likelihood must be an instance of Likelihood-class.")
+
+        self.logger.debug("Setting likelihood.")
+        self._likelihood = likelihood
 
     @property
     def prior(self):
@@ -51,27 +62,38 @@ class Pipeline(Loggable, object):
     def prior(self, prior):
         if not isinstance(prior, Prior):
             raise TypeError(
-                "prior must be an instance of prior-class.")
+                "prior must be an instance of Prior-class.")
+        self.logger.debug("Setting prior.")
+        self._prior = prior
 
     @property
-    def parameter_mapping(self):
-        return self._parameter_mapping
+    def magnetic_field_factory(self):
+        return self._magnetic_field_factory
 
-    @parameter_mapping.setter
-    def parameter_mapping(self, parameters):
-        """
-        The parameter-mapping must be a dictionary with
-        key: parameter-name
-        value: [min, mean, max]
-        """
-        new_mapping = {}
-        for p in parameters:
-            new_key = str(p[0])
-            new_value = [p[1], p[2], p[3]]
-            new_mapping[new_key] = new_value
-            self.logger.debug("Setting parameter_mapping %s to %s." %
-                              (new_key, new_mapping[new_key]))
-        self._parameter_mapping = new_mapping
+    @magnetic_field_factory.setter
+    def magnetic_field_factory(self, magnetic_field_factory):
+        if not isinstance(magnetic_field_factory, MagneticFieldFactory):
+            raise TypeError(
+                "magnetic_field_factory must be an instance of the "
+                "MagneticFieldFactory-class.")
+        self.logger.debug("Setting magnetic_field_factory.")
+        self._magnetic_field_factory = magnetic_field_factory
+
+    @property
+    def active_variables(self):
+        return self._active_variables
+
+    @active_variables.setter
+    def active_variables(self, active_variables):
+        if not isinstance(active_variables, list):
+            raise TypeError(
+                    "active_variables must be a list.")
+        self.logger.debug("Resetting active_variables to %s" %
+                          str(active_variables))
+        new_active = []
+        for av in active_variables:
+            new_active += [str(av)]
+        self._active_variables = new_active
 
     @property
     def ensemble_size(self):
@@ -86,19 +108,5 @@ class Pipeline(Loggable, object):
         self.logger.debug("Setting ensemble size to %i." % ensemble_size)
         self._ensemble_size = ensemble_size
 
-    def _map_parameters(self, parameter_list):
-        parameter_dict = {}
-        for i, name in enumerate(self.active_parameters):
-            if name in self.parameter_mapping:
-                mapping = self.parameter_mapping[name]
-                mapped_parameter = carrier_mapper(parameter_list[i],
-                                                  a=mapping[1],
-                                                  m=mapping[2],
-                                                  b=mapping[3])
-            else:
-                mapped_parameter = np.float(parameter_list[i])
-            parameter_dict[name] = mapped_parameter
-        return parameter_dict
-
-    def __call__(self, parameter_list):
-        mapped_parameters = self._map_parameters(parameter_list)
+    def __call__(self, variables):
+        pass
