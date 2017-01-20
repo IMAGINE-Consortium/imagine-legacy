@@ -47,12 +47,13 @@ class Pipeline(Loggable, object):
 
     @likelihood.setter
     def likelihood(self, likelihood):
-        if not isinstance(likelihood, Likelihood):
-            raise TypeError(
-                "likelihood must be an instance of Likelihood-class.")
-
         self.logger.debug("Setting likelihood.")
-        self._likelihood = likelihood
+        self._likelihood = ()
+        for l in likelihood:
+            if not isinstance(l, Likelihood):
+                raise TypeError(
+                    "likelihood must be an instance of Likelihood-class.")
+            self._likelihood += (l,)
 
     @property
     def prior(self):
@@ -60,11 +61,13 @@ class Pipeline(Loggable, object):
 
     @prior.setter
     def prior(self, prior):
-        if not isinstance(prior, Prior):
-            raise TypeError(
-                "prior must be an instance of Prior-class.")
         self.logger.debug("Setting prior.")
-        self._prior = prior
+        self._prior = ()
+        for p in prior:
+            if not isinstance(p, Prior):
+                raise TypeError(
+                    "prior must be an instance of Prior-class.")
+            self._prior += (p,)
 
     @property
     def magnetic_field_factory(self):
