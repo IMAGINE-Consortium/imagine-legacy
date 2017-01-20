@@ -79,7 +79,11 @@ class MagneticFieldFactory(Loggable, object):
             parameter_dict[variable_name] = mapped_variable
         return parameter_dict
 
-    def generate(self, variables):
+    @staticmethod
+    def _create_array(self):
+        raise NotImplementedError
+
+    def generate(self, variables={}):
         mapped_variables = self._map_variables_to_parameters(variables)
         work_parameters = self.parameter_defaults.copy()
         work_parameters.update(mapped_variables)
@@ -88,6 +92,7 @@ class MagneticFieldFactory(Loggable, object):
                                           box_dimensions=self.box_dimensions,
                                           resolution=self.resolution,
                                           descriptor=self.descriptor,
-                                          parameters=work_parameters)
+                                          parameters=work_parameters,
+                                          create_array=self._create_array)
 
         return result_magnetic_field

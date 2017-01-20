@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import types
+
 import numpy as np
 
 from keepers import Loggable
@@ -7,7 +9,7 @@ from keepers import Loggable
 
 class MagneticField(Loggable, object):
     def __init__(self, box_dimensions, resolution, descriptor,
-                 parameters={}):
+                 parameters={}, create_array=None):
 
         self._box_dimensions = box_dimensions
         self._resolution = resolution
@@ -18,6 +20,8 @@ class MagneticField(Loggable, object):
             self._parameters[str(key)] = np.float(value)
 
         self._array = None
+        if create_array is not None:
+            self._create_array = types.MethodType(create_array, self)
 
     @property
     def parameters(self):
