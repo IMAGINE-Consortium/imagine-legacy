@@ -20,7 +20,7 @@ class MagneticFieldFactory(Loggable, object):
 
     @abc.abstractproperty
     def descriptor(self):
-        raise NotImplementedError
+        return []
 
     def _initialize_parameter_defaults(self):
         self._parameter_defaults = {}

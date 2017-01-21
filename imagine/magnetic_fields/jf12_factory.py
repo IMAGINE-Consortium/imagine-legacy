@@ -6,7 +6,9 @@ from magnetic_field_factory import MagneticFieldFactory
 class JF12Factory(MagneticFieldFactory):
     @property
     def descriptor(self):
-        return 'JF12'
+        result_descriptor = super(JF12Factory, self).descriptor
+        result_descriptor += ['JF12']
+        return result_descriptor
 
     def _initialize_parameter_defaults(self):
         self._parameter_defaults = {'b51_ran_b1': 10.8,

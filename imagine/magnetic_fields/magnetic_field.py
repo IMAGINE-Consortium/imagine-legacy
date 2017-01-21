@@ -11,9 +11,11 @@ class MagneticField(Loggable, object):
     def __init__(self, box_dimensions, resolution, descriptor,
                  parameters={}, create_array=None):
 
-        self._box_dimensions = box_dimensions
-        self._resolution = resolution
-        self._descriptor = str(descriptor)
+        self._box_dimensions = np.empty(3)
+        self._box_dimensions[:] = box_dimensions
+        self._resolution = np.empty(3)
+        self._resolution[:] = resolution
+        self._descriptor = descriptor
 
         self._parameters = {}
         for (key, value) in parameters.items():
