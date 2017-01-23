@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import abc
 import numpy as np
 
 from keepers import Loggable
@@ -15,18 +14,21 @@ class MagneticFieldFactory(Loggable, object):
     def __init__(self, box_dimensions, resolution):
         self.box_dimensions = box_dimensions
         self.resolution = resolution
-        self._initialize_parameter_defaults()
-        self._initialize_variable_to_parameter_mappings()
+        self._parameter_defaults = self._initial_parameter_defaults
+        self._variable_to_parameter_mappings = \
+            self._initial_variable_to_parameter_mappings
 
-    @abc.abstractproperty
-    def descriptor(self):
-        return []
+    @property
+    def magnetic_field_class(self):
+        return MagneticField
 
-    def _initialize_parameter_defaults(self):
-        self._parameter_defaults = {}
+    @property
+    def _initial_parameter_defaults(self):
+        return {}
 
-    def _initialize_variable_to_parameter_mappings(self):
-        self._variable_to_parameter_mapping = {}
+    @property
+    def _initial_variable_to_parameter_mappings(self):
+        return {}
 
     @staticmethod
     def _interval(mean, sigma, n):
@@ -88,11 +90,9 @@ class MagneticFieldFactory(Loggable, object):
         work_parameters = self.parameter_defaults.copy()
         work_parameters.update(mapped_variables)
 
-        result_magnetic_field = MagneticField(
+        result_magnetic_field = self.magnetic_field_class(
                                           box_dimensions=self.box_dimensions,
                                           resolution=self.resolution,
-                                          descriptor=self.descriptor,
-                                          parameters=work_parameters,
-                                          create_array=self._create_array)
+                                          parameters=work_parameters)
 
         return result_magnetic_field
