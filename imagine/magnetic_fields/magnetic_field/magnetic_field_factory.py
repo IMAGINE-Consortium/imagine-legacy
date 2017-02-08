@@ -6,6 +6,8 @@ from keepers import Loggable
 
 from imagine.carrier_mapper import carrier_mapper
 
+from nifty import FieldArray, RGSpace
+
 from magnetic_field import MagneticField
 
 
@@ -17,6 +19,28 @@ class MagneticFieldFactory(Loggable, object):
         self._parameter_defaults = self._initial_parameter_defaults
         self._variable_to_parameter_mappings = \
             self._initial_variable_to_parameter_mappings
+
+    @property
+    def box_dimensions(self):
+        return self._box_dimensions
+
+    @box_dimensions.setter
+    def box_dimensions(self, box_dimensions):
+        dim = tuple(np.array(box_dimensions, dtype=np.float))
+        if len(dim) != 3:
+            raise ValueError("Input of box_dimensions must have length three.")
+        self._box_dimensions = dim
+
+    @property
+    def resolution(self):
+        return self._resolution
+
+    @resolution.setter
+    def resolution(self, resolution):
+        resolution = tuple(np.array(resolution, dtype=np.int))
+        if len(resolution) != 3:
+            raise ValueError("Input for resolution must have length three.")
+        self._resolution = resolution
 
     @property
     def magnetic_field_class(self):
@@ -81,18 +105,20 @@ class MagneticFieldFactory(Loggable, object):
             parameter_dict[variable_name] = mapped_variable
         return parameter_dict
 
-    @staticmethod
-    def _create_array(self):
-        raise NotImplementedError
-
-    def generate(self, variables={}):
+    def generate(self, variables={}, ensemble_size=1):
         mapped_variables = self._map_variables_to_parameters(variables)
         work_parameters = self.parameter_defaults.copy()
         work_parameters.update(mapped_variables)
 
+        distances = np.array(self.box_dimensions) / np.array(self.resolution)
+        grid_space = RGSpace(shape=self.resolution,
+                             distances=distances)
+        ensemble = FieldArray(shape=(ensemble_size,))
+        vector = FieldArray(shape=(3,))
+        domain = (ensemble, grid_space, vector)
+
         result_magnetic_field = self.magnetic_field_class(
-                                          box_dimensions=self.box_dimensions,
-                                          resolution=self.resolution,
-                                          parameters=work_parameters)
+                                                  domain=domain,
+                                                  parameters=work_parameters)
 
         return result_magnetic_field

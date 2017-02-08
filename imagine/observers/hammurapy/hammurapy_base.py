@@ -21,6 +21,13 @@ class HammurapyBase(Observer):
 
         self.last_call_log = ""
 
+        self.do_sync_emission = True
+        self.do_rm = True
+        self.do_dm = False
+        self.do_dust = False
+        self.do_tau = False
+        self.do_ff = False
+
         self.basic_parameters = {'obs_shell_index_numb': '1',
                                  'total_shell_numb': '1',
                                  'obs_NSIDE': '128',
@@ -34,29 +41,42 @@ class HammurapyBase(Observer):
                                  'TE_nz': '80',
                                  'B_field_do_random': 'T',
                                  'B_ran_mem_lim': '4',
-                                 'do_sync_emission': 'T',
-                                 'do_rm': 'T',
-                                 'do_dm': 'F',
-                                 'do_dust': 'F',
-                                 'do_tau': 'F',
-                                 'do_ff': 'F'}
+                                 }
 
     @abc.abstractproperty
-    def valid_magnetic_field_descriptor(self):
-        return []
-
-    def check_magnetic_field_descriptor(self, magnetic_field):
-        for d in self.valid_magnetic_field_descriptor:
-            if d not in magnetic_field.descriptor:
-                raise TypeError(
-                    "Given magnetic field does not match the "
-                    "needed descriptor of Hammurapy-Class: "
-                    "%s vs. %s" % (str(self.valid_magnetic_field_descriptor),
-                                   str(magnetic_field.descriptor)))
+    def valid_magnetic_field_class(self):
+        return object
 
     def _make_temp_folder(self):
         prefix = os.path.join(self.working_directory, 'temp_hammurabi_')
         return tempfile.mkdtemp(prefix=prefix)
+
+    def __call__(self, magnetic_field):
+        ensemble_number = magnetic_field.shape[0]
+
+        ensemble_space = magnetic_field.domain[0]
+        hp128 = HPSpace(nside=128)
+
+        result_observable = {}
+        if self.do_sync_emission:
+            result_observable['sync_emission'] = \
+                Field(domain=(ensemble_space, hp128, FieldArray((3,))))
+        if self.do_rm:
+            result_observable['rm'] = Field(domain=(ensemble_space, hp128))
+        if self.do_dm:
+            result_observable['dm'] = Field(domain=(hp128,))
+        if self.do_dust:
+            result_observable['dust'] = \
+                Field(domain=(ensemble_space, hp128, FieldArray((3,))))
+        if self.do_tau:
+            result_observable['tau'] = Field(domain=(ensemble_space, hp128,))
+        if self.do_ff:
+            result_observable['ff'] = Field(domain=(ensemble_space, hp128,))
+
+        # create dictionary for parameter file
+
+        # iterate over ensemble and put result into result_observable
+
 
 ###########
 
@@ -71,6 +91,14 @@ class HammurapyBase(Observer):
                            'B_field_ny': int(resolution[1]),
                            'B_field_nz': int(resolution[2]),
                            }
+
+                               {
+                                 'do_sync_emission': 'T',
+                                 'do_rm': 'T',
+                                 'do_dm': 'F',
+                                 'do_dust': 'F',
+                                 'do_tau': 'F',
+                                 'do_ff': 'F'}
 
         if self.parameters_dict['do_sync_emission'] == 'T':
             obs_sync_file_name = os.path.join(working_directory,

@@ -2,19 +2,24 @@
 
 import numpy as np
 
-from keepers import Loggable
+from nifty import Field, FieldArray, RGSpace
 
 
-class MagneticField(Loggable, object):
-    def __init__(self, box_dimensions, resolution, parameters):
+class MagneticField(Field):
+    def __init__(self, parameters=[], domain=None, val=None, dtype=None,
+                 distribution_strategy=None, copy=False):
 
-        self._box_dimensions = np.empty(3)
-        self._box_dimensions[:] = box_dimensions
-        self._box_dimensions = tuple(self._box_dimensions)
+        super(MagneticField, self).__init__(
+                                domain=domain,
+                                val=val,
+                                dtype=dtype,
+                                distribution_strategy=distribution_strategy,
+                                copy=copy)
 
-        self._resolution = np.empty(3)
-        self._resolution[:] = resolution
-        self._resolution = tuple(self._resolution)
+        assert(len(self.domain) == 3)
+        assert(isinstance(self.domain[0], FieldArray))
+        assert(isinstance(self.domain[1], RGSpace))
+        assert(isinstance(self.domain[2], FieldArray))
 
         self._parameters = {}
         for p in self.parameter_list:
@@ -28,23 +33,8 @@ class MagneticField(Loggable, object):
     def parameters(self):
         return self._parameters
 
-    @property
-    def field(self):
-        if self._field is None:
-            self._field = self._create_field()
-        return self._field
-
-    def _create_field(self):
-        raise NotImplementedError
-
-    @property
-    def box_dimensions(self):
-        return self._box_dimensions
-
-    @property
-    def resolution(self):
-        return self._resolution
-
-    @property
-    def descriptor(self):
-        return self._descriptor
+    def set_val(self, new_val=None, copy=False):
+        if new_val is not None:
+            raise RuntimeError("Setting the field values explicitly is not "
+                               "supported by MagneticField.")
+        self._val = self._create_field()
