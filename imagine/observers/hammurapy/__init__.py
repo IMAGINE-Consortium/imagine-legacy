@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from mixins import *
-
-from hammurapy_base import HammurapyBase
+from observable_mixins import *
+from model_mixins import *
+from hammurapy import Hammurapy

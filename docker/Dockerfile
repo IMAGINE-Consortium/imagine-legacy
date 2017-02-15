@@ -57,7 +57,7 @@ WORKDIR ../..
 
 RUN git clone https://github.com/JohannesBuchner/PyMultiNest.git
 WORKDIR PyMultiNest
-RUN python setup.py install --user
+RUN python setup.py install
 WORKDIR ..
 
 
@@ -67,7 +67,7 @@ RUN pip install mpi4py
 RUN pip install cython healpy 
 RUN git clone https://gitlab.mpcdf.mpg.de/ift/NIFTy.git -b master
 WORKDIR NIFTy
-RUN python setup.py install --user
+RUN python setup.py install
 WORKDIR ..
 
 

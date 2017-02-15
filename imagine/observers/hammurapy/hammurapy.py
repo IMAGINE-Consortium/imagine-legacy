@@ -11,21 +11,23 @@ import numpy as np
 from d2o import distributed_data_object
 
 from imagine.observers.observer import Observer
+from imagine.magnetic_fields.magnetic_field import MagneticField
 
 
-class HammurapyBase(Observer):
+class Hammurapy(Observer):
     def __init__(self, hammurabi_executable, conf_directory='./confs',
-                 working_directory_base='.'):
+                 working_directory_base='.', nside=128):
         self.hammurabi_executable = os.path.abspath(hammurabi_executable)
         self.conf_directory = os.path.abspath(conf_directory)
         self.working_directory_base = os.path.abspath(working_directory_base)
 
+        self.nside = nside
+
         self.last_call_log = ""
 
         self.basic_parameters = {'obs_shell_index_numb': '1',
-                                 'total_shell_numb': '1',
-                                 'obs_NSIDE': '128',
-                                 'vec_size_R': '100',
+                                 'total_shell_numb': '3',
+                                 'vec_size_R': '500',
                                  'max_radius': '35',
                                  'B_field_transform_lon': '-999',
                                  'B_field_transform_lat': '-999',
@@ -33,7 +35,13 @@ class HammurapyBase(Observer):
                                  'TE_nx': '400',
                                  'TE_ny': '400',
                                  'TE_nz': '80',
-                                 'B_field_do_random': 'T',
+                                 'TE_interp' : 'T',
+                                 'B_field_do_random': 'S',
+                                 'obs_freq_GHz': '22',
+                                 'B_field_RMS_uG': '2',
+                                 'B_analytic_beta': '0',
+                                 'B_field_interp': 'T',
+                                 'use_B_analytic': 'F',
                                  'B_ran_mem_lim': '4',
                                  'do_sync_emission': 'F',
                                  'do_rm': 'F',
@@ -44,8 +52,8 @@ class HammurapyBase(Observer):
                                  }
 
     @abc.abstractproperty
-    def valid_magnetic_field_class(self):
-        return object
+    def magnetic_field_class(self):
+        return MagneticField
 
     def _make_temp_folder(self):
         prefix = os.path.join(self.working_directory_base, 'temp_hammurabi_')
@@ -66,7 +74,7 @@ class HammurapyBase(Observer):
         else:
             self.logger.warning('Could not delete %s' % path)
 
-    def _read_fits_file(self, path, name):
+    def _read_fits_file(self, path, name, nside):
         map_path = os.path.join(path, name)
         result_list = []
         i = 0
@@ -74,7 +82,7 @@ class HammurapyBase(Observer):
             try:
                 loaded_map = healpy.read_map(map_path, verbose=False,
                                              field=i)
-                loaded_map = healpy.ud_grade(loaded_map, nside_out=128)
+                loaded_map = healpy.ud_grade(loaded_map, nside_out=nside)
                 result_list += [loaded_map]
                 i += 1
             except IndexError:
@@ -105,6 +113,7 @@ class HammurapyBase(Observer):
                                'B_field_ny': ny,
                                'B_field_nz': nz,
                                })
+        parameter_dict.update({'obs_NSIDE': self.nside})
 
     def _write_parameter_dict(self, parameter_dict, working_directory):
         parameters_string = ''
@@ -121,6 +130,10 @@ class HammurapyBase(Observer):
         return observable_dict
 
     def __call__(self, magnetic_field):
+
+        if not isinstance(magnetic_field, self.magnetic_field_class):
+            raise ValueError("Given magnetic field is not a subclass of" +
+                             " %s" % str(self.magnetic_field_class))
 
         observable_dict = {}
         self._initialize_observable_dict(observable_dict=observable_dict,
