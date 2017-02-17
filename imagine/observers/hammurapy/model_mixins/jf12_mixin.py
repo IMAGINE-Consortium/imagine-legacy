@@ -10,7 +10,15 @@ class JF12Mixin(object):
 
     def _build_parameter_dict(self, parameter_dict, magnetic_field,
                               working_directory, local_ensemble_index):
-        parameter_dict['B_field_type'] = '51'
+        parameter_dict.update({'B_field_type': '7',
+                               'B_field_do_random': 'T',
+                               'B_analytic_beta': '1.36',
+                               'B_field_RMS_uG': '1',
+                               'B_field_interp': 'T',
+                               'use_B_analytic': 'F',
+                               'B_ran_mem_lim': '4',
+                               'obs_freq_GHz': '23'})
+
         parameter_dict.update(magnetic_field.parameters)
 
         super(JF12Mixin, self)._build_parameter_dict(parameter_dict,
