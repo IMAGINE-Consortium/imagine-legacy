@@ -4,7 +4,7 @@ import numpy as np
 
 from keepers import Loggable
 
-from imagine.carrier_mapper import carrier_mapper
+from imagine.carrier_mapper import unity_mapper
 
 from nifty import FieldArray, RGSpace
 
@@ -96,10 +96,13 @@ class MagneticFieldFactory(Loggable, object):
         for variable_name in variables:
             if variable_name in self.variable_to_parameter_mappings:
                 mapping = self.variable_to_parameter_mappings[variable_name]
-                mapped_variable = carrier_mapper(variables[variable_name],
-                                                 a=mapping[0],
-                                                 m=mapping[1],
-                                                 b=mapping[2])
+                mapped_variable = unity_mapper(variables[variable_name],
+                                               a=mapping[0],
+                                               b=mapping[2])
+#                mapped_variable = carrier_mapper(variables[variable_name],
+#                                                 a=mapping[0],
+#                                                 m=mapping[1],
+#                                                 b=mapping[2])
             else:
                 mapped_variable = np.float(variables[variable_name])
             parameter_dict[variable_name] = mapped_variable
