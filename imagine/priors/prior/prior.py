@@ -7,5 +7,5 @@ from keepers import Loggable
 
 class Prior(Loggable, object):
     @abc.abstractmethod
-    def __call__(self, parameters):
+    def __call__(self, cube, ndim, nparams):
         raise NotImplemented
