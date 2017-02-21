@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 
+import os
+import numpy as np
+
+from mpi4py import MPI
+
 from keepers import Loggable
 
 from likelihoods import Likelihood
 from magnetic_fields import MagneticFieldFactory
 from observers import Observer
 from priors import Prior
+from imagine.pymultinest import pymultinest
+
+comm = MPI.COMM_WORLD
+size = comm.size
+rank = comm.rank
 
 
 class Pipeline(Loggable, object):
@@ -111,5 +121,51 @@ class Pipeline(Loggable, object):
         self.logger.debug("Setting ensemble size to %i." % ensemble_size)
         self._ensemble_size = ensemble_size
 
+    def _multinest_likelihood(self, cube, ndim, nparams):
+        cube_content = np.empty(ndim)
+        for i in xrange(ndim):
+            cube_content[i] = cube[i]
+        if rank != 0:
+            raise RuntimeError("_multinest_likelihood must only be called on "
+                               "rank==0.")
+        for i in xrange(1, size):
+            comm.send(cube_content, dest=i)
+
+        return self._core_likelihood(cube_content)
+
+    def _listen_for_likelihood_calls(self):
+        cube = comm.recv(obj=None, source=0)
+        self._core_likelihood(cube)
+
+    def _core_likelihood(self, cube):
+        # translate cube to variables
+        variables = {}
+        for i, av in enumerate(self.active_variables):
+            variables[av] = cube[i]
+
+        # create magnetic field
+        b_field = self.magnetic_field_factory(variables=variables,
+                                              ensemble_size=self.ensemle_size)
+        # create observables
+        observables = self.observer(b_field)
+
+        # add up individual log-likelihood terms
+        likelihood = 0
+        for like in self.likelihood:
+            likelihood += like(observables)
+
+        return likelihood
+
     def __call__(self, variables):
-        pass
+
+        if rank == 0:
+            # kickstart pymultinest
+            if not os.path.exists("chains"):
+                os.mkdir("chains")
+            pymultinest.run(self._multinest_likelihood,
+                            self.prior,
+                            len(self.active_variables),
+                            verbose=True)
+        else:
+            # let all other nodes listen for likelihood evaluations
+            self._listen_for_likelihood_calls()

@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
 from likelihood import Likelihood
-from ensemble_likelihood import EnsembleLikelihood
+from ensemble_likelihood import *
