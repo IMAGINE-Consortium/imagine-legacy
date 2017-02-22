@@ -136,7 +136,8 @@ class Hammurapy(Observer):
         # get the local shape by creating a dummy d2o
         ensemble_number = magnetic_field.shape[0]
         dummy = distributed_data_object(global_shape=(ensemble_number,),
-                                        distribution_strategy='equal')
+                                        distribution_strategy='equal',
+                                        dtype=np.float)
 
         local_length = dummy.distributor.local_length
         for local_ensemble_index in xrange(local_length):

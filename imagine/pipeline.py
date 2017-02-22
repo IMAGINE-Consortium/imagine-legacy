@@ -11,11 +11,14 @@ from likelihoods import Likelihood
 from magnetic_fields import MagneticFieldFactory
 from observers import Observer
 from priors import Prior
-from imagine.pymultinest import pymultinest
+from imagine import pymultinest
 
 comm = MPI.COMM_WORLD
 size = comm.size
 rank = comm.rank
+
+WORK_TAG = 0
+DIE_TAG = 1
 
 
 class Pipeline(Loggable, object):
@@ -59,6 +62,9 @@ class Pipeline(Loggable, object):
     def likelihood(self, likelihood):
         self.logger.debug("Setting likelihood.")
         self._likelihood = ()
+        if not (isinstance(likelihood, list) and
+                isinstance(likelihood, tuple)):
+            likelihood = [likelihood]
         for l in likelihood:
             if not isinstance(l, Likelihood):
                 raise TypeError(
@@ -72,12 +78,10 @@ class Pipeline(Loggable, object):
     @prior.setter
     def prior(self, prior):
         self.logger.debug("Setting prior.")
-        self._prior = ()
-        for p in prior:
-            if not isinstance(p, Prior):
-                raise TypeError(
-                    "prior must be an instance of Prior-class.")
-            self._prior += (p,)
+        if not isinstance(prior, Prior):
+            raise TypeError(
+                "prior must be an instance of Prior-class.")
+        self._prior = prior
 
     @property
     def magnetic_field_factory(self):
@@ -129,43 +133,63 @@ class Pipeline(Loggable, object):
             raise RuntimeError("_multinest_likelihood must only be called on "
                                "rank==0.")
         for i in xrange(1, size):
-            comm.send(cube_content, dest=i)
+            comm.send(cube_content, dest=i, tag=WORK_TAG)
+            self.logger.debug("Sent multinest-cube to rank %i" % i)
 
         return self._core_likelihood(cube_content)
 
     def _listen_for_likelihood_calls(self):
-        cube = comm.recv(obj=None, source=0)
-        self._core_likelihood(cube)
+        status = MPI.Status()
+        while True:
+            cube = comm.recv(source=0, tag=MPI.ANY_TAG, status=status)
+            if status == DIE_TAG:
+                self.logger.debug("Received DIE_TAG from rank 0.")
+                break
+            self.logger.debug("Received cube from rank 0.")
+            self._core_likelihood(cube)
 
     def _core_likelihood(self, cube):
+        self.logger.debug("Beginning Likelihood-calculation for %s." %
+                          str(cube))
         # translate cube to variables
         variables = {}
         for i, av in enumerate(self.active_variables):
             variables[av] = cube[i]
 
         # create magnetic field
-        b_field = self.magnetic_field_factory(variables=variables,
-                                              ensemble_size=self.ensemle_size)
+        self.logger.debug("Creating magnetic field.")
+        b_field = self.magnetic_field_factory.generate(
+                                              variables=variables,
+                                              ensemble_size=self.ensemble_size)
+
         # create observables
+        self.logger.debug("Creating observables.")
         observables = self.observer(b_field)
 
         # add up individual log-likelihood terms
+        self.logger.debug("Evaluating likelihood(s).")
         likelihood = 0
         for like in self.likelihood:
             likelihood += like(observables)
 
+        self.logger.debug("Evaluated likelihood: %f" % likelihood)
         return likelihood
 
     def __call__(self, variables):
 
         if rank == 0:
             # kickstart pymultinest
+            self.logger.info("starting pymultinest.")
             if not os.path.exists("chains"):
                 os.mkdir("chains")
             pymultinest.run(self._multinest_likelihood,
                             self.prior,
                             len(self.active_variables),
                             verbose=True)
+            self.logger.info("pymultinest finished.")
+            for i in xrange(1, size):
+                self.logger.debug("Sending DIE_TAG to rank %i." % i)
+                comm.send(None, dest=i, tag=DIE_TAG)
         else:
             # let all other nodes listen for likelihood evaluations
             self._listen_for_likelihood_calls()

@@ -6,7 +6,7 @@ from magnetic_fields import *
 from observers import *
 from priors import *
 
-from pymultinest import pymultinest
+from pymultinest_importer import pymultinest
 
 from pipeline import Pipeline
 

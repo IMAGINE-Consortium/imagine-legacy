@@ -121,7 +121,8 @@ class MagneticFieldFactory(Loggable, object):
         domain = (ensemble, grid_space, vector)
 
         result_magnetic_field = self.magnetic_field_class(
-                                                  domain=domain,
-                                                  parameters=work_parameters)
+                                              domain=domain,
+                                              parameters=work_parameters,
+                                              distribution_strategy='equal')
 
         return result_magnetic_field
