@@ -9,10 +9,10 @@ def create_ring_profile(input_map):
     npix = input_map.shape[0]
     nside = hp.npix2nside(npix)
 
-    rings = hp.pix2ring(nside, np.arange(npix))
+    rings = hp.pix2ring(nside, np.arange(npix)) - 1
 
-    rho = np.bincount(rings)[1:]
-    averages = np.bincount(rings, weights=input_map)[1:]/rho
+    rho = np.bincount(rings)
+    averages = np.bincount(rings, weights=input_map)/rho
 
     result = averages[rings]
 

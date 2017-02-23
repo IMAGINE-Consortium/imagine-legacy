@@ -8,12 +8,14 @@ from imagine.create_ring_profile import create_ring_profile
 
 class EnsembleLikelihood(Likelihood):
     def __init__(self, observable_name,  measured_data,
-                 data_covariance_operator):
+                 data_covariance_operator, profile=None):
         self.observable_name = observable_name
         self.measured_data = measured_data
         self.data_covariance_operator = data_covariance_operator
-        self.profile = create_ring_profile(
+        if profile is None:
+            profile = create_ring_profile(
                             self.measured_data.val.get_full_data())
+        self.profile = profile
 
     def __call__(self, observable):
         field = observable[self.observable_name]
