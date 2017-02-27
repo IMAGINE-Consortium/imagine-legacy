@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-
-from nifty import RGSpace, Field, FieldArray
-
 from imagine.magnetic_fields.magnetic_field import MagneticField
 
 

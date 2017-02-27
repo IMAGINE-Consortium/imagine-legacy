@@ -7,7 +7,7 @@ from nifty import Field, FieldArray, RGSpace
 
 class MagneticField(Field):
     def __init__(self, parameters=[], domain=None, val=None, dtype=None,
-                 distribution_strategy=None, copy=False):
+                 distribution_strategy=None, copy=False, random_seed=None):
 
         super(MagneticField, self).__init__(
                                 domain=domain,
@@ -24,6 +24,12 @@ class MagneticField(Field):
         self._parameters = {}
         for p in self.parameter_list:
             self._parameters[p] = np.float(parameters[p])
+
+        self.random_seed = np.empty(self.shape[0], dtype=np.int)
+        if random_seed is None:
+            random_seed = np.random.randint(np.uint32(-1)/3,
+                                            size=self.shape[0])
+        self.random_seed[:] = random_seed
 
     @property
     def parameter_list(self):

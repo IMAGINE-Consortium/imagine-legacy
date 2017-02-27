@@ -12,8 +12,7 @@ class JF12Mixin(object):
                                  'B_field_RMS_uG': '1',
                                  'B_field_interp': 'T',
                                  'use_B_analytic': 'F',
-                                 'B_ran_mem_lim': '4',
-                                 'obs_freq_GHz': '23'}
+                                 'B_ran_mem_lim': '4'}
         super(JF12Mixin, self).__init__(hammurabi_executable,
                                         conf_directory,
                                         working_directory_base,

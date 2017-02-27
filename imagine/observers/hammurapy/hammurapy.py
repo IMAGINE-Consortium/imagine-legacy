@@ -42,6 +42,7 @@ class Hammurapy(Observer):
                                  'do_dust': 'F',
                                  'do_tau': 'F',
                                  'do_ff': 'F',
+                                 'obs_freq_GHz': '23'
                                  }
 
     @abc.abstractproperty
@@ -98,6 +99,7 @@ class Hammurapy(Observer):
         grid_space = magnetic_field.domain[1]
         lx, ly, lz = np.array(grid_space.shape)*np.array(grid_space.distances)
         nx, ny, nz = grid_space.shape
+        random_seed = magnetic_field.random_seed[local_ensemble_index]
 
         parameter_dict.update({'B_field_lx': lx,
                                'B_field_ly': ly,
@@ -107,6 +109,7 @@ class Hammurapy(Observer):
                                'B_field_nz': nz,
                                })
         parameter_dict.update({'obs_NSIDE': self.nside})
+        parameter_dict.update({'B_field_seed': random_seed})
 
     def _write_parameter_dict(self, parameter_dict, working_directory):
         parameters_string = ''
