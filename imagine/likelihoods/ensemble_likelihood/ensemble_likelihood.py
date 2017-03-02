@@ -39,7 +39,12 @@ class EnsembleLikelihood(Likelihood):
         obs_val = observable.val.get_full_data()
         obs_mean = observable.mean(spaces=0).val.get_full_data()
 
-        u_val = observable.val.get_full_data() - obs_mean
+        # divide out profile
+        obs_val /= profile
+        obs_mean /= profile
+        measured_data = measured_data / profile
+
+        u_val = obs_val - obs_mean
         U = observable.copy_empty()
         U.val = u_val
         a_u = A.inverse_times(U, spaces=1)
@@ -53,7 +58,6 @@ class EnsembleLikelihood(Likelihood):
         result_array = np.zeros(k)
         for i in xrange(k):
             c = measured_data - obs_val[i]
-            c /= profile
 
             # assuming that A == A^dagger, this can be shortend
             # a_c = A.inverse_times(c)
