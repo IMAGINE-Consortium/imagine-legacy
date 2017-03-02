@@ -34,7 +34,8 @@ class Pipeline(Loggable, object):
 
     """
     def __init__(self, magnetic_field_factory, observer, likelihood, prior,
-                 active_variables=[], ensemble_size=1):
+                 active_variables=[], ensemble_size=1,
+                 pymultinest_parameters={}):
         self.logger.debug("Setting up pipeline.")
         self.magnetic_field_factory = magnetic_field_factory
         self.observer = observer
@@ -42,6 +43,12 @@ class Pipeline(Loggable, object):
         self.prior = prior
         self.active_variables = active_variables
         self.ensemble_size = ensemble_size
+
+        # setting defaults
+        self.pymultinest_parameters = {'verbose': True,
+                                       'n_iter_before_update': 1,
+                                       'n_live_points': 100}
+        self.pymultinest_parameters.update(pymultinest_parameters)
 
     @property
     def observer(self):
@@ -185,7 +192,7 @@ class Pipeline(Loggable, object):
             pymultinest.run(self._multinest_likelihood,
                             self.prior,
                             len(self.active_variables),
-                            verbose=True)
+                            **self.pymultinest_parameters)
             self.logger.info("pymultinest finished.")
             for i in xrange(1, size):
                 self.logger.debug("Sending DIE_TAG to rank %i." % i)
