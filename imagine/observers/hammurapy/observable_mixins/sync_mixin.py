@@ -2,18 +2,18 @@
 
 import os
 
-from nifty import Field, HPSpace, FieldArray
+from nifty import Field, HPSpace
 
 
 class SyncMixin(object):
     def _initialize_observable_dict(self, observable_dict, magnetic_field):
         ensemble_space = magnetic_field.domain[0]
         hpSpace = HPSpace(nside=self.nside)
-        fieldArray = FieldArray((3,))
 
-        observable_dict['sync'] = Field(domain=(ensemble_space, hpSpace,
-                                                fieldArray),
-                                        distribution_strategy='equal')
+        for name in ['sync_I', 'sync_Q', 'sync_U']:
+            observable_dict[name] = Field(domain=(ensemble_space, hpSpace),
+                                          distribution_strategy='equal')
+
         super(SyncMixin, self)._initialize_observable_dict(observable_dict,
                                                            magnetic_field)
 
@@ -34,10 +34,9 @@ class SyncMixin(object):
                                                         name='IQU_sync.fits',
                                                         nside=self.nside)
 
-        sync_field = observable_dict['sync']
-        sync_field.val.data[local_ensemble_index, :, 0] = sync_I
-        sync_field.val.data[local_ensemble_index, :, 1] = sync_Q
-        sync_field.val.data[local_ensemble_index, :, 2] = sync_U
+        observable_dict['sync_I'].val.data[local_ensemble_index, :] = sync_I
+        observable_dict['sync_Q'].val.data[local_ensemble_index, :] = sync_Q
+        observable_dict['sync_U'].val.data[local_ensemble_index, :] = sync_U
 
         super(SyncMixin, self)._fill_observable_dict(observable_dict,
                                                      working_directory,

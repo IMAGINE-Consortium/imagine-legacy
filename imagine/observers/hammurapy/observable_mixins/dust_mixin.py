@@ -2,18 +2,18 @@
 
 import os
 
-from nifty import Field, HPSpace, FieldArray
+from nifty import Field, HPSpace
 
 
 class DustMixin(object):
     def _initialize_observable_dict(self, observable_dict, magnetic_field):
         ensemble_space = magnetic_field.domain[0]
         hpSpace = HPSpace(nside=self.nside)
-        fieldArray = FieldArray((3,))
 
-        observable_dict['dust'] = Field(domain=(ensemble_space, hpSpace,
-                                                fieldArray),
-                                        distribution_strategy='equal')
+        for name in ['dust_I', 'dust_Q', 'dust_U']:
+            observable_dict[name] = Field(domain=(ensemble_space, hpSpace),
+                                          distribution_strategy='equal')
+
         super(DustMixin, self)._initialize_observable_dict(observable_dict,
                                                            magnetic_field)
 
@@ -34,10 +34,9 @@ class DustMixin(object):
                                                         name='IQU_dust.fits',
                                                         nside=self.nside)
 
-        dust_field = observable_dict['dust']
-        dust_field.val.data[local_ensemble_index, :, 0] = dust_I
-        dust_field.val.data[local_ensemble_index, :, 1] = dust_Q
-        dust_field.val.data[local_ensemble_index, :, 2] = dust_U
+        observable_dict['dust_I'].val.data[local_ensemble_index, :] = dust_I
+        observable_dict['dust_Q'].val.data[local_ensemble_index, :] = dust_Q
+        observable_dict['dust_U'].val.data[local_ensemble_index, :] = dust_U
 
         super(DustMixin, self)._fill_observable_dict(observable_dict,
                                                      working_directory,
