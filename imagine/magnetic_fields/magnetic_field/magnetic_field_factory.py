@@ -14,6 +14,7 @@ from magnetic_field import MagneticField
 class MagneticFieldFactory(Loggable, object):
 
     def __init__(self, box_dimensions, resolution):
+        self.logger.debug("Setting up MagneticFieldFactory.")
         self.box_dimensions = box_dimensions
         self.resolution = resolution
         self._parameter_defaults = self._initial_parameter_defaults
@@ -124,5 +125,6 @@ class MagneticFieldFactory(Loggable, object):
                                               domain=domain,
                                               parameters=work_parameters,
                                               distribution_strategy='equal')
-
+        self.logger.debug("Generated magnetic field with work-parameters %s" %
+                          work_parameters)
         return result_magnetic_field

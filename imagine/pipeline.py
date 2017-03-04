@@ -141,7 +141,7 @@ class Pipeline(Loggable, object):
                                "rank==0.")
         for i in xrange(1, size):
             comm.send(cube_content, dest=i, tag=WORK_TAG)
-            self.logger.debug("Sent multinest-cube to rank %i" % i)
+        self.logger.debug("Sent multinest-cube to nodes with rank > 0.")
 
         return self._core_likelihood(cube_content)
 
@@ -179,14 +179,15 @@ class Pipeline(Loggable, object):
         for like in self.likelihood:
             likelihood += like(observables)
 
-        self.logger.debug("Evaluated likelihood: %f" % likelihood)
+        self.logger.info("Evaluated likelihood: %f for %s" %
+                         (likelihood, str(cube)))
         return likelihood
 
     def __call__(self, variables):
 
         if rank == 0:
             # kickstart pymultinest
-            self.logger.info("starting pymultinest.")
+            self.logger.info("Starting pymultinest.")
             if not os.path.exists("chains"):
                 os.mkdir("chains")
             pymultinest.run(self._multinest_likelihood,
