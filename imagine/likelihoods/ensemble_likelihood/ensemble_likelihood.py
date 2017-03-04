@@ -66,18 +66,26 @@ class EnsembleLikelihood(Likelihood):
 
             # and: double conjugate shouldn't make a difference
             # u_a_c = c.conjugate().dot(a_u, spaces=1).conjugate()
-            u_a_c = c.dot(a_u, spaces=1)
-            u_a_c_val = u_a_c.val.get_full_data()
+
+            # Pure NIFTy is
+            # u_a_c = c.dot(a_u, spaces=1)
+            # u_a_c_val = u_a_c.val.get_full_data()
+            c_weighted_val = c.weight().val.get_full_data()
+            u_a_c_val = np.einsum(c_weighted_val, [1], a_u_val, [0, 1])
 
             first_summand = A.inverse_times(c)
-
             second_summand_val = np.einsum(middle, [0, 1], u_a_c_val, [1])
             second_summand_val = np.einsum(a_u_val, [0, 1],
                                            second_summand_val, [0])
+            second_summand_val *= -1
             second_summand = first_summand.copy_empty()
             second_summand.val = second_summand_val
 
-            result = c.dot(first_summand - second_summand)
+            result_1 = c.dot(first_summand)
+            result_2 = c.dot(second_summand)
+            result = result_1 + result_2
+            self.logger.debug("Calculated: %f + %f = %f" %
+                              (result_1, result_2, result))
             result_array[i] = result
 
         return -result_array.mean()
