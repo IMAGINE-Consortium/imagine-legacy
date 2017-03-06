@@ -34,7 +34,7 @@ CFITSIO = /usr/local
 #
 GALPROP = $(BASE_DIR)/galprop/galprop/build
 CCFITS = $(BASE_DIR)/ccfits/CCfits//build/
-CLHEP = $(BASE_DIR)/clhep/2.0.4.5/CLHEP/build/
+CLHEP = $(BASE_DIR)/clhep/clhep/build/
 
 #
 #  What c++ compiler you are using?
@@ -42,7 +42,7 @@ CLHEP = $(BASE_DIR)/clhep/2.0.4.5/CLHEP/build/
 CXX = g++ 
 #
 # On OSX, maybe
-#CXX = g++-mp-4.3 
+#CXX = g++-mp-5 
 
 #
 #  Compile options?  64bit system (-m64), optimization (-O2), openMP (-fopenmp), warnings (-Wall), etc.
@@ -58,7 +58,7 @@ CXXFLAGS =  -m64 -O2 -fopenmp -Wall
 FC = gfortran
 #
 # On OSX, maybe
-#FC = gfortran-mp-4.3
+#FC = gfortran-mp-5
 
 #  For gfortran
 FCFLAGS = -O2 -ffixed-form -ffixed-line-length-132 -c
@@ -77,9 +77,10 @@ LFORTFLAGS= -Df2cFortran
 #
 #  Additional options depending on how you want to run:
 #  
-#  Use openMP ?  (Even for hammurabi.debug, at link stage, need this if HEALPix compiled with it.)
-LFLAGS_CUSTOM =  -fopenmp 
-
+#  Use openMP.  Right now, this is mandatory.  (Contact
+#   trjaffe@gmail.com for help compiling without if for some reason you
+#   need it.)
+LFLAGS_CUSTOM = -fopenmp
 #
 #  OSX with gfortran-mp-4.3
 #LFLAGS_CUSTOM = -fopenmp -lgcc_s.1 
@@ -125,10 +126,10 @@ hammurabi.debug : CXXFLAGS+= $(ALL_INC) -c -DGALDEF_PATH=\"./GALDEF\" -DFITSDATA
 libhamprop.a: CXXFLAGS+= $(ALL_INC) -c -DGALDEF_PATH=\"./GALDEF\" -DFITSDATA_PATH=\"./FITS/\" -DDATA_PATH=\"./DATA\"  -DLIBHAMPROP -DGALPROP -DNE2001
 
 
-hammurabi:  LFLAGS = $(ALL_L) -lhammurabi -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 $(LFLAGS_CUSTOM) 
-hammurabi.ne2001:  LFLAGS = $(ALL_L) -lhammurabi -lNE2001 -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lgfortran $(LFLAGS_CUSTOM) 
-hammurabi.debug:  LFLAGS = $(ALL_L) -lhammurabi -lNE2001 -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lgfortran -lgalprop -lskymap -lCCfits -lCLHEP $(LFLAGS_CUSTOM)  
-hammurabi.galprop:  LFLAGS = $(ALL_L) -lhammurabi -lNE2001 -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lgfortran -lgalprop -lskymap -lCCfits -lCLHEP $(LFLAGS_CUSTOM) 
+hammurabi:  LFLAGS = $(ALL_L) -lhammurabi -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lfftw3_omp $(LFLAGS_CUSTOM) 
+hammurabi.ne2001:  LFLAGS = $(ALL_L) -lhammurabi -lNE2001 -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lfftw3_omp -lgfortran $(LFLAGS_CUSTOM) 
+hammurabi.debug:  LFLAGS = $(ALL_L) -lhammurabi -lNE2001 -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lfftw3_omp -lgfortran -lgalprop -lskymap -lCCfits -lCLHEP $(LFLAGS_CUSTOM)  
+hammurabi.galprop:  LFLAGS = $(ALL_L) -lhammurabi -lNE2001 -lhealpix_cxx -lcxxsupport -lc_utils -lfftpack -lcfitsio -lgsl -lgslcblas -lm -lfftw3 -lfftw3_omp -lgfortran -lgalprop -lskymap -lCCfits -lCLHEP $(LFLAGS_CUSTOM) 
 
 
 
@@ -173,7 +174,10 @@ hammurabi.galprop: 	$(HAMMURABI_OBJ) $(NE2001_OBJ) $(NE2001_DATA) libNE2001.a li
 
 hammurabi.debug: 	$(HAMMURABI_OBJ) $(NE2001_DATA) libNE2001.a libhammurabi.a run hammurabi.o
 	$(CXX) -o run/hammurabi.debug hammurabi.o $(LFLAGS) $(LFORTFLAGS)
-
+ifeq ($(OSTYPE),darwin)
+	 install_name_tool -change "@rpath/libCLHEP-2.3.3.1.dylib" "$(CLHEP)/lib/libCLHEP-2.3.3.1.dylib" run/hammurabi.debug
+endif	
+	
 print_constants: print_constants.o
 		 $(CXX) -o run/print_constants print_constants.o 
 
@@ -186,7 +190,7 @@ libhammurabi.a: $(HAMMURABI_OBJ)
 
 
 clean:
-	rm *a *.o 
+	rm *.a *.o 
 
 test:
 	(cd unit_test; ./test.csh)
@@ -196,4 +200,8 @@ test_big:
 
 
 tarfile:
-	tar cvzf hammurabi.tgz *cpp *h Makefile *.f README
+	tar cvzf hammurabi.tgz *cpp *h Makefile *.f README hampy
+
+unittar:
+	tar cvzf hammurabi_unit_test.tgz unit_test/inputs unit_test/GALDEF unit_test/FITS unit_test/negrid_n400.bin unit_test/ref.mini unit_test/ref unit_test/ref.big  
+

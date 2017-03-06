@@ -1,5 +1,10 @@
-FROM python:2.7-wheezy
+FROM ubuntu:latest
 
+RUN apt-get update
+RUN apt-get install -y build-essential python python-pip python-dev git gfortran autoconf gsl-bin libgsl-dev wget unzip
+
+RUN pip install numpy scipy cython astropy ipython
+ 
 RUN mkdir /home/Downloads
 WORKDIR /home/Downloads
 
@@ -12,7 +17,7 @@ WORKDIR ..
 #FFTW
 RUN wget http://www.fftw.org/fftw-3.3.5.tar.gz && tar xzf fftw-3.3.5.tar.gz
 WORKDIR fftw-3.3.5
-RUN ./configure --enable-threads --enable-shared --prefix=/usr/local/ && make && make install
+RUN ./configure --enable-threads --enable-openmp --enable-shared --prefix=/usr/local/ && make && make install
 WORKDIR ..
 
 #GSL
@@ -32,9 +37,13 @@ WORKDIR ..
 ENV HEALPIX_TARGET optimized_gcc 
 ENV HEALPIX /home/Downloads/Healpix_3.31
 
+#healpy
+RUN pip install healpy 
+
 #Hammurabi
-RUN wget http://downloads.sourceforge.net/project/hammurabicode/hammurabi_v3.01.tar.gz && tar xzf hammurabi_v3.01.tar.gz 
-WORKDIR hammurabicode-code
+RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-41-trunk.zip
+RUN unzip  hammurabicode-code-41-trunk.zip
+WORKDIR hammurabicode-code-41-trunk
 COPY hammurabi_Makefile Makefile
 RUN [ -r /root/.healpix/3_31_Linux/config ] && . /root/.healpix/3_31_Linux/config && make hammurabi && make clean
 WORKDIR ..
@@ -46,7 +55,8 @@ RUN apt-get update && apt-get install -y libblas3 libblas-dev \
 					 cmake \
 					 build-essential \
 					 git \
-					 gfortran
+					 gfortran\
+					 python-tk
 #RUN apt-get install -y libopenmpi-dev openmpi-bin openmpi-doc
 RUN pip install numpy scipy matplotlib progressbar ipython
 
@@ -60,11 +70,26 @@ WORKDIR PyMultiNest
 RUN python setup.py install
 WORKDIR ..
 
-
+#mpi4py
 RUN apt-get install -y libopenmpi-dev openmpi-bin openmpi-doc
-RUN pip install mpi4py
+RUN pip install mpi4py 
 
-RUN pip install cython healpy 
+#hdf5
+RUN apt-get install -y libhdf5-10 libhdf5-dev libhdf5-openmpi-10 libhdf5-openmpi-dev hdf5-tools
+
+#h5py
+RUN wget https://api.github.com/repos/h5py/h5py/tags -O - | grep tarball_url | grep -v rc | head -n 1 | cut -d '"' -f 4 | wget -i - -O h5py.tar.gz
+RUN mkdir h5py
+RUN tar xzf h5py.tar.gz -C h5py --strip-components=1
+WORKDIR h5py
+ENV CC=mpicc 
+ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi 
+RUN python setup.py configure --mpi 
+RUN python setup.py build 
+RUN python setup.py install 
+WORKDIR ..
+
+#NIFTy
 RUN git clone https://gitlab.mpcdf.mpg.de/ift/NIFTy.git -b master
 WORKDIR NIFTy
 RUN python setup.py install
