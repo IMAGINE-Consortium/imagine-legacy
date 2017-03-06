@@ -25,6 +25,9 @@ setup(name = "imagine",
       package_data={'': ['*.npy'],
                     'imagine.hammurapy': ['confs/*'],},
       package_dir={"imagine": "imagine"},
+      dependency_links=[
+        'git+https://gitlab.mpcdf.mpg.de/ift/nifty.git/@master#egg=nifty-3.0.3'],
+      install_requires=['ift_nifty>=3.0.3', 'simplejson'],
       zip_safe=False,
       classifiers=[
          "Development Status :: 3 - Alpha",

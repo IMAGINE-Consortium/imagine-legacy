@@ -10,5 +10,7 @@ from pymultinest_importer import pymultinest
 
 from pipeline import Pipeline
 
+from sample import Sample
+
 import nifty
 nifty.nifty_configuration['default_distribution_strategy'] = 'equal'
