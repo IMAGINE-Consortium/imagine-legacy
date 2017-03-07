@@ -7,11 +7,12 @@ from mpi4py import MPI
 
 from keepers import Loggable
 
-from likelihoods import Likelihood
-from magnetic_fields import MagneticFieldFactory
-from observers import Observer
-from priors import Prior
+from imagine.likelihoods import Likelihood
+from imagine.magnetic_fields import MagneticFieldFactory
+from imagine.observers import Observer
+from imagine.priors import Prior
 from imagine import pymultinest
+from imagine.sample import Sample
 
 comm = MPI.COMM_WORLD
 size = comm.size
@@ -35,7 +36,7 @@ class Pipeline(Loggable, object):
     """
     def __init__(self, magnetic_field_factory, observer, likelihood, prior,
                  active_variables=[], ensemble_size=1,
-                 pymultinest_parameters={}):
+                 pymultinest_parameters={}, sample_callback=None):
         self.logger.debug("Setting up pipeline.")
         self.magnetic_field_factory = magnetic_field_factory
         self.observer = observer
@@ -44,11 +45,13 @@ class Pipeline(Loggable, object):
         self.active_variables = active_variables
         self.ensemble_size = ensemble_size
 
-        # setting defaults
+        # setting defaults for pymultinest
         self.pymultinest_parameters = {'verbose': True,
                                        'n_iter_before_update': 1,
                                        'n_live_points': 100}
         self.pymultinest_parameters.update(pymultinest_parameters)
+
+        self.sample_callback = sample_callback
 
     @property
     def observer(self):
@@ -175,12 +178,25 @@ class Pipeline(Loggable, object):
 
         # add up individual log-likelihood terms
         self.logger.debug("Evaluating likelihood(s).")
-        likelihood = 0
+        likelihood = ()
+        total_likelihood = 0
         for like in self.likelihood:
-            likelihood += like(observables)
+            current_likelihood = like(observables)
+            likelihood += (current_likelihood, )
+            total_likelihood += current_likelihood
 
         self.logger.info("Evaluated likelihood: %f for %s" %
-                         (likelihood, str(cube)))
+                         (total_likelihood, str(cube)))
+
+        if self.sample_callback is not None:
+            self.logger.debug("Creating sample-object.")
+            sample = Sample(variables=variables,
+                            magnetic_field=b_field,
+                            observables=observables,
+                            likelihood=likelihood,
+                            total_likelihood=total_likelihood)
+            self.sample_callback(sample)
+
         return likelihood
 
     def __call__(self, variables):
