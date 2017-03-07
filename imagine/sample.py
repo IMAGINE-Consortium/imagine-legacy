@@ -14,11 +14,30 @@ from imagine.magnetic_fields import MagneticField
 class Sample(Loggable, Versionable, object):
     def __init__(self, variables=None, magnetic_field=None, observables=None,
                  likelihood=None, total_likelihood=None):
-        self.variables = variables
-        self.magnetic_field = magnetic_field
-        self.observables = observables
-        self.likelihood = likelihood
-        self.total_likelihood = total_likelihood
+        if variables is not None:
+            self.variables = variables
+        else:
+            self._variables = None
+
+        if magnetic_field is not None:
+            self.magnetic_field = magnetic_field
+        else:
+            self._magnetic_field = None
+
+        if observables is not None:
+            self.observables = observables
+        else:
+            self._observables = None
+
+        if likelihood is not None:
+            self.likelihood = likelihood
+        else:
+            self._likelihood = None
+
+        if total_likelihood is not None:
+            self.total_likelihood = total_likelihood
+        else:
+            self._total_likelihood = None
 
     @property
     def variables(self):
