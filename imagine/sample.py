@@ -2,6 +2,8 @@
 
 import simplejson as json
 
+import numpy as np
+
 from keepers import Loggable,\
                     Versionable
 
@@ -10,10 +12,13 @@ from imagine.magnetic_fields import MagneticField
 
 
 class Sample(Loggable, Versionable, object):
-    def __init__(self):
-        self._variables = None
-        self._magnetic_field = None
-        self._observables = None
+    def __init__(self, variables=None, magnetic_field=None, observables=None,
+                 likelihood=None, total_likelihood=None):
+        self.variables = variables
+        self.magnetic_field = magnetic_field
+        self.observables = observables
+        self.likelihood = likelihood
+        self.total_likelihood = total_likelihood
 
     @property
     def variables(self):
@@ -50,9 +55,35 @@ class Sample(Loggable, Versionable, object):
             parsed_observables[key] = value
         self._observables = parsed_observables
 
+    @property
+    def likelihood(self):
+        return self._likelihood
+
+    @likelihood.setter
+    def likelihood(self, likelihood):
+        if np.isscalar(likelihood):
+            likelihood = (likelihood, )
+        else:
+            likelihood = tuple(likelihood)
+        self._likelihood = likelihood
+
+    @property
+    def total_likelihood(self):
+        return self._total_likelihood
+
+    @total_likelihood.setter
+    def total_likelihood(self, total_likelihood):
+        self._total_likelihood = np.float(total_likelihood)
+
     def _to_hdf5(self, hdf5_group):
         if self._variables is not None:
             hdf5_group.attrs['variables'] = json.dumps(self._variables)
+
+        if self._likelihood is not None:
+            hdf5_group['likelihood'] = self._likelihood
+
+        if self._total_likelihood is not None:
+            hdf5_group.attrs['total_likelihood'] = self._total_likelihood
 
         return_dict = {}
         if self._magnetic_field is not None:
@@ -71,6 +102,16 @@ class Sample(Loggable, Versionable, object):
         try:
             variables = hdf5_group.attrs['variables']
             new_sample._variables = json.loads(variables)
+        except(KeyError):
+            pass
+
+        try:
+            new_sample._likelihood = tuple(hdf5_group['likelihood'])
+        except(KeyError):
+            pass
+
+        try:
+            new_sample._total_likelihood = hdf5_group.attrs['total_likelihood']
         except(KeyError):
             pass
 
