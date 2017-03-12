@@ -21,6 +21,18 @@ class MagneticFieldFactory(Loggable, object):
         self._variable_to_parameter_mappings = \
             self._initial_variable_to_parameter_mappings
 
+        distances = np.array(self.box_dimensions) / np.array(self.resolution)
+        self._grid_space = RGSpace(shape=self.resolution,
+                                   distances=distances)
+        self._vector = FieldArray(shape=(3,))
+        self._ensemble_cache = {}
+
+    def _get_ensemble(self, ensemble_size):
+        if ensemble_size not in self._ensemble_cache:
+            self._ensemble_cache[ensemble_size] = \
+                                FieldArray(shape=(ensemble_size,))
+        return self._ensemble_cache[ensemble_size]
+
     @property
     def box_dimensions(self):
         return self._box_dimensions
@@ -114,12 +126,9 @@ class MagneticFieldFactory(Loggable, object):
         work_parameters = self.parameter_defaults.copy()
         work_parameters.update(mapped_variables)
 
-        distances = np.array(self.box_dimensions) / np.array(self.resolution)
-        grid_space = RGSpace(shape=self.resolution,
-                             distances=distances)
-        ensemble = FieldArray(shape=(ensemble_size,))
-        vector = FieldArray(shape=(3,))
-        domain = (ensemble, grid_space, vector)
+        domain = (self._get_ensemble(ensemble_size),
+                  self._grid_space,
+                  self._vector)
 
         result_magnetic_field = self.magnetic_field_class(
                                               domain=domain,
