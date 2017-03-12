@@ -21,7 +21,7 @@ class Hammurapy(Observer):
         self.conf_directory = os.path.abspath(conf_directory)
         self.working_directory_base = os.path.abspath(working_directory_base)
 
-        self.nside = nside
+        self.nside = int(nside)
 
         self.last_call_log = ""
 

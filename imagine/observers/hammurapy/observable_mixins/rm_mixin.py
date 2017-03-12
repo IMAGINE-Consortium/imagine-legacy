@@ -6,11 +6,18 @@ from nifty import Field, HPSpace
 
 
 class RMMixin(object):
+    def __init__(self, hammurabi_executable, conf_directory='./confs',
+                 working_directory_base='.', nside=128):
+        self.__hpSpace = HPSpace(nside=int(nside))
+        super(RMMixin, self).__init__(hammurabi_executable,
+                                      conf_directory,
+                                      working_directory_base,
+                                      nside)
+
     def _initialize_observable_dict(self, observable_dict, magnetic_field):
         ensemble_space = magnetic_field.domain[0]
-        hpSpace = HPSpace(nside=self.nside)
 
-        observable_dict['rm'] = Field(domain=(ensemble_space, hpSpace),
+        observable_dict['rm'] = Field(domain=(ensemble_space, self.__hpSpace),
                                       distribution_strategy='equal')
         super(RMMixin, self)._initialize_observable_dict(observable_dict,
                                                          magnetic_field)
