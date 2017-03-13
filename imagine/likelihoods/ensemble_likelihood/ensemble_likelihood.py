@@ -81,11 +81,20 @@ class EnsembleLikelihood(Likelihood):
             second_summand = first_summand.copy_empty()
             second_summand.val = second_summand_val
 
-            result_1 = c.dot(first_summand)
-            result_2 = c.dot(second_summand)
+            result_1 = -c.dot(first_summand)
+            result_2 = -c.dot(second_summand)
             result = result_1 + result_2
             self.logger.debug("Calculated: %f + %f = %f" %
                               (result_1, result_2, result))
             result_array[i] = result
 
-        return -result_array.mean()
+        total_result = result_array.mean()
+        normalization = measured_data.dot(measured_data)
+        normalized_total_result = total_result / normalization
+        self.logger.info("Applied normalization for total result: "
+                         "%f / %f = %f" %
+                         (total_result,
+                          normalization,
+                          normalized_total_result))
+
+        return normalized_total_result
