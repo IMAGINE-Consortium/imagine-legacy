@@ -22,12 +22,12 @@ class JF12MagneticFieldFactory(MagneticFieldFactory):
                     'b51_ran_b7': 37.29,
                     'b51_ran_b8': 10.35,
                     'b51_coh_b1': 0.1,
-                    'b51_coh_b2': 3.0,
+                    'b51_coh_b2': 3.,
                     'b51_coh_b3': -0.9,
                     'b51_coh_b4': -0.8,
-                    'b51_coh_b5': -2.0,
+                    'b51_coh_b5': -2.,
                     'b51_coh_b6': -4.2,
-                    'b51_coh_b7': 0.0,
+                    'b51_coh_b7': 0.,
                     'b51_z0_spiral': 0.61,
                     'b51_z0_smooth': 2.84,
                     'b51_r0_smooth': 10.97,
@@ -41,8 +41,8 @@ class JF12MagneticFieldFactory(MagneticFieldFactory):
                     'b51_z0_halo': 5.3,
                     'b51_b_ring': 0.1,
                     'b51_b0_interior': 7.63,
-                    'b51_reg_b0': 1,
-                    'b51_shift': 0}
+                    'b51_reg_b0': 1.,
+                    'b51_shift': 0.}
         return defaults
 
     @property
