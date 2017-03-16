@@ -25,6 +25,11 @@ class Hammurapy(Observer):
 
         self.last_call_log = ""
 
+        sync_template_fname = os.path.join(self.conf_directory,
+                                           'IQU_sync.fits')
+        dust_template_fname = os.path.join(self.conf_directory,
+                                           'IQU_dust.fits')
+
         self.basic_parameters = {'obs_shell_index_numb': '1',
                                  'total_shell_numb': '3',
                                  'vec_size_R': '500',
@@ -42,7 +47,9 @@ class Hammurapy(Observer):
                                  'do_dust': 'F',
                                  'do_tau': 'F',
                                  'do_ff': 'F',
-                                 'obs_freq_GHz': '23'
+                                 'obs_freq_GHz': '23',
+                                 'sync_template_fname': sync_template_fname,
+                                 'dust_template_fname': dust_template_fname
                                  }
 
     @abc.abstractproperty

@@ -84,8 +84,8 @@ class EnsembleLikelihood(Likelihood):
             result_1 = -c.dot(first_summand)
             result_2 = -c.dot(second_summand)
             result = result_1 + result_2
-            self.logger.debug("Calculated: %f + %f = %f" %
-                              (result_1, result_2, result))
+            self.logger.debug("Calculated %i of %i: %f + %f = %f" %
+                              (i, k, result_1, result_2, result))
             result_array[i] = result
 
         total_result = result_array.mean()

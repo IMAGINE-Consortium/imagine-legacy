@@ -13,7 +13,6 @@ class Jaffe13Mixin(object):
                                  'B_field_interp': 'T',
                                  'use_B_analytic': 'F',
                                  'B_ran_mem_lim': '4',
-
                                  'bb_molr_aniso': 'T',
                                  'bb_ord_interarm': 'T',
                                  'bb_scale_coh_amps': 'T',

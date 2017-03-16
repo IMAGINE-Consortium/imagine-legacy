@@ -13,7 +13,8 @@ class JF12MagneticFieldFactory(MagneticFieldFactory):
 
     @property
     def _initial_parameter_defaults(self):
-        defaults = {'b51_ran_b1': 10.8,
+        defaults = {'B_field_RMS_uG': 1.,
+                    'b51_ran_b1': 10.8,
                     'b51_ran_b2': 6.96,
                     'b51_ran_b3': 9.59,
                     'b51_ran_b4': 6.96,
@@ -51,6 +52,7 @@ class JF12MagneticFieldFactory(MagneticFieldFactory):
 
     def _generate_variable_to_parameter_mapping_defaults(self, n):
         defaults = {
+           'B_field_RMS_uG': self._interval(1., 0.3, n),
            'b51_ran_b1': self._interval(10.8, 2.33, n),  # b_1, 1210.7820
            'b51_ran_b2': self._interval(6.96, 1.58, n),  # b_2, 1210.7820
            'b51_ran_b3': self._interval(9.59, 1.10, n),  # b_3, 1210.7820
