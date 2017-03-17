@@ -64,7 +64,7 @@ class Jaffe13MagneticFieldFactory(MagneticFieldFactory):
                     'B_field_RMS_uG': self._interval(1., 0.3, n),
                     'B_field_alpha': self._interval(-2.37, 1., n),
                     'B_field_cutoff': self._interval(5., 1., n),
-                    'B_ran_b2': self._interval(0.1, 1., n),
+                    'B_ran_b2': self._interval(0.1, 0.3, n),
                     'B_ran_h_d': self._interval(4., 1., n),
                     'B_ran_h_d2': self._interval(1., 1., n),
                     'B_ran_h_r': self._interval(15., 5., n),

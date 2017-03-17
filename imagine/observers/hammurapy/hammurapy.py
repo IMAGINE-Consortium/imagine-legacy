@@ -167,10 +167,19 @@ class Hammurapy(Observer):
             self._write_parameter_dict(parameter_dict=parameter_dict,
                                        working_directory=working_directory)
 
+            # call hammurabi
             self._call_hammurabi(working_directory)
-            self._fill_observable_dict(observable_dict,
-                                       working_directory,
-                                       local_ensemble_index)
-            self._remove_folder(working_directory)
+
+            # if hammurabi failed, _fill_observable_dict will fail
+            try:
+                self._fill_observable_dict(observable_dict,
+                                           working_directory,
+                                           local_ensemble_index)
+            except:
+                self.logger.critical("Hammurabi failed! Last call log:\n" +
+                                     self.last_call_log)
+                raise
+            finally:
+                self._remove_folder(working_directory)
 
         return observable_dict
