@@ -199,7 +199,7 @@ class Pipeline(Loggable, object):
 
         return likelihood
 
-    def __call__(self, variables):
+    def __call__(self):
 
         if rank == 0:
             # kickstart pymultinest
