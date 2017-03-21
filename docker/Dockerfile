@@ -21,7 +21,7 @@ RUN ./configure --enable-threads --enable-openmp --enable-shared --prefix=/usr/l
 WORKDIR ..
 
 #GSL
-RUN wget http://ftp.halifax.rwth-aachen.de/gnu/gsl/gsl-2.3.tar.gz && tar xzf gsl-2.3.tar.gz
+RUN wget http://nl.mirror.babylon.network/gnu/gsl/gsl-2.3.tar.gz && tar xzf gsl-2.3.tar.gz
 WORKDIR gsl-2.3
 RUN ./configure --enable-shared --prefix=/usr/local/ && make && make install
 WORKDIR ..
@@ -41,9 +41,12 @@ ENV HEALPIX /home/Downloads/Healpix_3.31
 RUN pip install healpy 
 
 #Hammurabi
-RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-41-trunk.zip
-RUN unzip  hammurabicode-code-41-trunk.zip
-WORKDIR hammurabicode-code-41-trunk
+# RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-41-trunk.zip
+# RUN unzip  hammurabicode-code-41-trunk.zip
+# WORKDIR hammurabicode-code-41-trunk
+RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-52-trunk.zip
+RUN unzip  hammurabicode-code-52-trunk.zip
+WORKDIR hammurabicode-code-52-trunk
 COPY hammurabi_Makefile Makefile
 RUN [ -r /root/.healpix/3_31_Linux/config ] && . /root/.healpix/3_31_Linux/config && make hammurabi && make clean
 WORKDIR ..
@@ -95,6 +98,8 @@ WORKDIR NIFTy
 RUN python setup.py install
 WORKDIR ..
 
+#hampy
+RUN pip install jupyter pandas
 
 
 

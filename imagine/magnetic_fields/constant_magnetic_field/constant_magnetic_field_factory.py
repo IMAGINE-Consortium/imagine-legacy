@@ -22,6 +22,6 @@ class ConstantMagneticFieldFactory(MagneticFieldFactory):
 
     @property
     def _initial_variable_to_parameter_mappings(self):
-        return {'b_x': [-np.inf, 0, np.inf],
-                'b_y': [-np.inf, 0, np.inf],
-                'b_z': [-np.inf, 0, np.inf]}
+        return {'b_x': [-100, 0, 100],
+                'b_y': [-100, 0, 100],
+                'b_z': [-100, 0, 100]}
