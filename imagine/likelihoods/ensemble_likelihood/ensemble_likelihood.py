@@ -55,42 +55,43 @@ class EnsembleLikelihood(Likelihood):
                   np.einsum(u_val.conjugate(), [0, 1],
                             a_u_val, [2, 1]))
         middle = np.linalg.inv(middle)
-        result_array = np.zeros(k)
-        for i in xrange(k):
-            c = measured_data - obs_val[i]
+#        result_array = np.zeros(k)
+#        for i in xrange(k):
+#           c = measured_data - obs_val[i]
+        c = measured_data - obs_mean
 
-            # assuming that A == A^dagger, this can be shortend
-            # a_c = A.inverse_times(c)
-            # u_a_c = a_c.dot(U, spaces=1)
-            # u_a_c = u_a_c.conjugate()
+        # assuming that A == A^dagger, this can be shortend
+        # a_c = A.inverse_times(c)
+        # u_a_c = a_c.dot(U, spaces=1)
+        # u_a_c = u_a_c.conjugate()
 
-            # and: double conjugate shouldn't make a difference
-            # u_a_c = c.conjugate().dot(a_u, spaces=1).conjugate()
+        # and: double conjugate shouldn't make a difference
+        # u_a_c = c.conjugate().dot(a_u, spaces=1).conjugate()
 
-            # Pure NIFTy is
-            # u_a_c = c.dot(a_u, spaces=1)
-            # u_a_c_val = u_a_c.val.get_full_data()
-            c_weighted_val = c.weight().val.get_full_data()
-            u_a_c_val = np.einsum(c_weighted_val, [1], a_u_val, [0, 1])
+        # Pure NIFTy is
+        # u_a_c = c.dot(a_u, spaces=1)
+        # u_a_c_val = u_a_c.val.get_full_data()
+        c_weighted_val = c.weight().val.get_full_data()
+        u_a_c_val = np.einsum(c_weighted_val, [1], a_u_val, [0, 1])
 
-            first_summand = A.inverse_times(c)
-            self.logger.debug("Calculated first summand.")
-            second_summand_val = np.einsum(middle, [0, 1], u_a_c_val, [1])
-            self.logger.debug("Intermediate step.")
-            second_summand_val = np.einsum(a_u_val, [0, 1],
-                                           second_summand_val, [0])
-            second_summand_val *= -1
-            second_summand = first_summand.copy_empty()
-            second_summand.val = second_summand_val
+        first_summand = A.inverse_times(c)
+        self.logger.debug("Calculated first summand.")
+        second_summand_val = np.einsum(middle, [0, 1], u_a_c_val, [1])
+        self.logger.debug("Intermediate step.")
+        second_summand_val = np.einsum(a_u_val, [0, 1],
+                                       second_summand_val, [0])
+        second_summand_val *= -1
+        second_summand = first_summand.copy_empty()
+        second_summand.val = second_summand_val
 
-            result_1 = -c.dot(first_summand)
-            result_2 = -c.dot(second_summand)
-            result = result_1 + result_2
-            self.logger.debug("Calculated %i of %i: %f + %f = %f" %
-                              (i, k, result_1, result_2, result))
-            result_array[i] = result
-
-        total_result = result_array.mean()
+        result_1 = -c.dot(first_summand)
+        result_2 = -c.dot(second_summand)
+        result = result_1 + result_2
+        self.logger.debug("Calculated %i of %i: %f + %f = %f" %
+                          (i, k, result_1, result_2, result))
+#        result_array[i] = result
+#        total_result = result_array.mean()
+        total_result = result
         normalization = measured_data.dot(measured_data)
         normalized_total_result = total_result / normalization
         self.logger.info("Applied normalization for total result: "
