@@ -8,10 +8,7 @@ class JF12Mixin(object):
                  working_directory_base='.', nside=128):
         self.__parameter_dict = {'B_field_type': '7',
                                  'B_field_do_random': 'T',
-                                 'B_analytic_beta': '1.36',
-                                 'B_field_interp': 'T',
-                                 'use_B_analytic': 'F',
-                                 'B_ran_mem_lim': '4'}
+                                 'B_analytic_beta': '1.36'}
         super(JF12Mixin, self).__init__(hammurabi_executable,
                                         conf_directory,
                                         working_directory_base,

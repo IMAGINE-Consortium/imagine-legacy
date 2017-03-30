@@ -37,7 +37,7 @@ class EnsembleLikelihood(Likelihood):
 
         A = data_covariance_operator
         obs_val = observable.val.get_full_data()
-        obs_mean = observable.mean(spaces=0).val.get_full_data()
+        obs_mean = observable.ensemble_mean().get_full_data()
 
         # divide out profile
         obs_val /= profile
@@ -87,8 +87,8 @@ class EnsembleLikelihood(Likelihood):
         result_1 = -c.dot(first_summand)
         result_2 = -c.dot(second_summand)
         result = result_1 + result_2
-        self.logger.debug("Calculated %i of %i: %f + %f = %f" %
-                          (i, k, result_1, result_2, result))
+        self.logger.debug("Calculated: %f + %f = %f" %
+                          (result_1, result_2, result))
 #        result_array[i] = result
 #        total_result = result_array.mean()
         total_result = result

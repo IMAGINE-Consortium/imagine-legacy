@@ -30,7 +30,8 @@ class Hammurapy(Observer):
         dust_template_fname = os.path.join(self.conf_directory,
                                            'IQU_dust.fits')
 
-        self.basic_parameters = {'obs_shell_index_numb': '1',
+        self.basic_parameters = {'B_ran_mem_lim': '4',
+                                 'obs_shell_index_numb': '1',
                                  'total_shell_numb': '3',
                                  'vec_size_R': '500',
                                  'max_radius': '35',
@@ -106,7 +107,9 @@ class Hammurapy(Observer):
         grid_space = magnetic_field.domain[1]
         lx, ly, lz = np.array(grid_space.shape)*np.array(grid_space.distances)
         nx, ny, nz = grid_space.shape
-        random_seed = magnetic_field.random_seed[local_ensemble_index]
+        if local_ensemble_index is not None:
+            random_seed = magnetic_field.random_seed[local_ensemble_index]
+            parameter_dict.update({'B_field_seed': random_seed})
 
         parameter_dict.update({'B_field_lx': lx,
                                'B_field_ly': ly,
@@ -116,7 +119,6 @@ class Hammurapy(Observer):
                                'B_field_nz': nz,
                                })
         parameter_dict.update({'obs_NSIDE': self.nside})
-        parameter_dict.update({'B_field_seed': random_seed})
 
     def _write_parameter_dict(self, parameter_dict, working_directory):
         parameters_string = ''
@@ -131,6 +133,9 @@ class Hammurapy(Observer):
     def _fill_observable_dict(self, observable_dict, working_directory,
                               ensemble_index):
         return observable_dict
+
+    def _add_ensemble_mean(self, observable_dict, working_directory):
+        pass
 
     def __call__(self, magnetic_field):
 
@@ -158,6 +163,11 @@ class Hammurapy(Observer):
 
             # create dictionary for parameter file
             parameter_dict = self.basic_parameters.copy()
+
+            # set the parameters for a numerical run
+            parameter_dict['B_field_interp'] = 'T'
+            parameter_dict['use_B_analytic'] = 'F'
+
             self._build_parameter_dict(
                                     parameter_dict=parameter_dict,
                                     magnetic_field=magnetic_field,
@@ -181,5 +191,45 @@ class Hammurapy(Observer):
                 raise
             finally:
                 self._remove_folder(working_directory)
+
+        # compute ensemble_mean on the last node and add it to the observables
+        rank = dummy.comm.rank
+        size = dummy.comm.size
+
+        if rank + 1 == size:
+            self.logger.debug("Processing ensemble mean.")
+            # create a temporary folder
+            working_directory = self._make_temp_folder()
+
+            # create dictionary for parameter file
+            parameter_dict = self.basic_parameters.copy()
+
+            # set the parameters for an analytic run
+            parameter_dict['use_B_analytic'] = 'T'
+
+            self._build_parameter_dict(
+                                    parameter_dict=parameter_dict,
+                                    magnetic_field=magnetic_field,
+                                    working_directory=working_directory,
+                                    local_ensemble_index=None)
+
+            self._write_parameter_dict(parameter_dict=parameter_dict,
+                                       working_directory=working_directory)
+
+            # call hammurabi
+            self._call_hammurabi(working_directory)
+
+            # if hammurabi failed, _add_ensemble_mean will fail
+            try:
+                self._add_ensemble_mean(observable_dict, working_directory)
+            except:
+                self.logger.critical("Hammurabi failed! Last call log:\n" +
+                                     self.last_call_log)
+                raise
+            finally:
+                self._remove_folder(working_directory)
+        else:
+            working_directory = None
+            self._add_ensemble_mean(observable_dict, working_directory)
 
         return observable_dict
