@@ -5,11 +5,13 @@ from imagine.magnetic_fields.jaffe13_magnetic_field import Jaffe13MagneticField
 
 class Jaffe13Mixin(object):
     def __init__(self, hammurabi_executable, conf_directory='./confs',
-                 working_directory_base='.', nside=128):
+                 working_directory_base='.', nside=128,
+                 analytic_ensemble_mean=False):
         self.__parameter_dict = {'B_field_type': '10',
                                  'B_field_do_random': 'T',
                                  'B_analytic_beta': '0',
-                                 'B_field_RMS_uG': '3.5',
+                                 'B_f_ord': '1.0',
+                                 'B_field_RMS_uG': '1.0',
                                  'bb_molr_aniso': 'T',
                                  'bb_ord_interarm': 'T',
                                  'bb_scale_coh_amps': 'T',
@@ -19,7 +21,8 @@ class Jaffe13Mixin(object):
         super(Jaffe13Mixin, self).__init__(hammurabi_executable,
                                            conf_directory,
                                            working_directory_base,
-                                           nside)
+                                           nside,
+                                           analytic_ensemble_mean)
 
     @property
     def magnetic_field_class(self):

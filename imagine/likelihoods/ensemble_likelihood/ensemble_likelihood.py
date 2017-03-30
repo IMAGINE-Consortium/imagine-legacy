@@ -91,13 +91,5 @@ class EnsembleLikelihood(Likelihood):
                           (result_1, result_2, result))
 #        result_array[i] = result
 #        total_result = result_array.mean()
-        total_result = result
-        normalization = measured_data.dot(measured_data)
-        normalized_total_result = total_result / normalization
-        self.logger.info("Applied normalization for total result: "
-                         "%f / %f = %f" %
-                         (total_result,
-                          normalization,
-                          normalized_total_result))
 
-        return normalized_total_result
+        return result

@@ -5,14 +5,18 @@ from imagine.magnetic_fields.jf12_magnetic_field import JF12MagneticField
 
 class JF12Mixin(object):
     def __init__(self, hammurabi_executable, conf_directory='./confs',
-                 working_directory_base='.', nside=128):
+                 working_directory_base='.', nside=128,
+                 analytic_ensemble_mean=False):
         self.__parameter_dict = {'B_field_type': '7',
                                  'B_field_do_random': 'T',
-                                 'B_analytic_beta': '1.36'}
+                                 'B_field_RMS_uG': '1.0',
+                                 'b51_reg_b0': '1.0',
+                                 }
         super(JF12Mixin, self).__init__(hammurabi_executable,
                                         conf_directory,
                                         working_directory_base,
-                                        nside)
+                                        nside,
+                                        analytic_ensemble_mean)
 
     @property
     def magnetic_field_class(self):

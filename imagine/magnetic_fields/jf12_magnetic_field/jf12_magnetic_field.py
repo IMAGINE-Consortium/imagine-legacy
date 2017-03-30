@@ -15,7 +15,7 @@ class JF12MagneticField(MagneticField):
                           'b51_b0_smooth', 'b51_b0_x', 'b51_Xtheta',
                           'b51_r0_x', 'b51_h_disk', 'b51_Bn', 'b51_Bs',
                           'b51_z0_halo', 'b51_b_ring', 'b51_b0_interior',
-                          'b51_reg_b0', 'b51_shift']
+                          'b51_shift', 'B_analytic_beta']
         return parameter_list
 
     def _create_field(self):

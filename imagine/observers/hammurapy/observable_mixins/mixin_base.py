@@ -15,12 +15,14 @@ from imagine.observables import Observable
 
 class MixinBase(object):
     def __init__(self, hammurabi_executable, conf_directory='./confs',
-                 working_directory_base='.', nside=128):
+                 working_directory_base='.', nside=128,
+                 analytic_ensemble_mean=False):
         self.__hpSpace = HPSpace(nside=int(nside))
         super(MixinBase, self).__init__(hammurabi_executable,
                                         conf_directory,
                                         working_directory_base,
-                                        nside)
+                                        nside,
+                                        analytic_ensemble_mean)
 
     @property
     def __config_dict(self):

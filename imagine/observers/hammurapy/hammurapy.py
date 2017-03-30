@@ -16,10 +16,13 @@ from imagine.magnetic_fields.magnetic_field import MagneticField
 
 class Hammurapy(Observer):
     def __init__(self, hammurabi_executable, conf_directory='./confs',
-                 working_directory_base='.', nside=128):
+                 working_directory_base='.', nside=128,
+                 analytic_ensemble_mean=False):
         self.hammurabi_executable = os.path.abspath(hammurabi_executable)
         self.conf_directory = os.path.abspath(conf_directory)
         self.working_directory_base = os.path.abspath(working_directory_base)
+
+        self.analytic_ensemble_mean = bool(analytic_ensemble_mean)
 
         self.nside = int(nside)
 
@@ -30,7 +33,7 @@ class Hammurapy(Observer):
         dust_template_fname = os.path.join(self.conf_directory,
                                            'IQU_dust.fits')
 
-        self.basic_parameters = {'B_ran_mem_lim': '4',
+        self.basic_parameters = {'B_ran_mem_lim': '6',
                                  'obs_shell_index_numb': '1',
                                  'total_shell_numb': '3',
                                  'vec_size_R': '500',
@@ -41,7 +44,7 @@ class Hammurapy(Observer):
                                  'TE_nx': '400',
                                  'TE_ny': '400',
                                  'TE_nz': '80',
-                                 'TE_interp': 'T',
+                                 'TE_interp': 'F',
                                  'do_sync_emission': 'F',
                                  'do_rm': 'F',
                                  'do_dm': 'F',
@@ -192,44 +195,45 @@ class Hammurapy(Observer):
             finally:
                 self._remove_folder(working_directory)
 
-        # compute ensemble_mean on the last node and add it to the observables
-        rank = dummy.comm.rank
-        size = dummy.comm.size
+        if self.analytic_ensemble_mean:
+            # compute ensemble_mean on last node and add it to the observables
+            rank = dummy.comm.rank
+            size = dummy.comm.size
 
-        if rank + 1 == size:
-            self.logger.debug("Processing ensemble mean.")
-            # create a temporary folder
-            working_directory = self._make_temp_folder()
+            if rank + 1 == size:
+                self.logger.debug("Processing ensemble mean.")
+                # create a temporary folder
+                working_directory = self._make_temp_folder()
 
-            # create dictionary for parameter file
-            parameter_dict = self.basic_parameters.copy()
+                # create dictionary for parameter file
+                parameter_dict = self.basic_parameters.copy()
 
-            # set the parameters for an analytic run
-            parameter_dict['use_B_analytic'] = 'T'
+                # set the parameters for an analytic run
+                parameter_dict['use_B_analytic'] = 'T'
 
-            self._build_parameter_dict(
-                                    parameter_dict=parameter_dict,
-                                    magnetic_field=magnetic_field,
-                                    working_directory=working_directory,
-                                    local_ensemble_index=None)
+                self._build_parameter_dict(
+                                        parameter_dict=parameter_dict,
+                                        magnetic_field=magnetic_field,
+                                        working_directory=working_directory,
+                                        local_ensemble_index=None)
 
-            self._write_parameter_dict(parameter_dict=parameter_dict,
-                                       working_directory=working_directory)
+                self._write_parameter_dict(parameter_dict=parameter_dict,
+                                           working_directory=working_directory)
 
-            # call hammurabi
-            self._call_hammurabi(working_directory)
+                # call hammurabi
+                self._call_hammurabi(working_directory)
 
-            # if hammurabi failed, _add_ensemble_mean will fail
-            try:
+                # if hammurabi failed, _add_ensemble_mean will fail
+                try:
+                    self._add_ensemble_mean(observable_dict, working_directory)
+                except:
+                    self.logger.critical("Hammurabi failed! Last call log:\n" +
+                                         self.last_call_log)
+                    raise
+                finally:
+                    self._remove_folder(working_directory)
+            else:
+                working_directory = None
                 self._add_ensemble_mean(observable_dict, working_directory)
-            except:
-                self.logger.critical("Hammurabi failed! Last call log:\n" +
-                                     self.last_call_log)
-                raise
-            finally:
-                self._remove_folder(working_directory)
-        else:
-            working_directory = None
-            self._add_ensemble_mean(observable_dict, working_directory)
 
         return observable_dict

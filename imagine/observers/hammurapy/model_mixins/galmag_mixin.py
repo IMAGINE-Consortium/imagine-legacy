@@ -7,12 +7,14 @@ from imagine.magnetic_fields.galmag_field import GalMagField
 
 class GalMagMixin(object):
     def __init__(self, hammurabi_executable, conf_directory='./confs',
-                 working_directory_base='.', nside=128):
+                 working_directory_base='.', nside=128,
+                 analytic_ensemble_mean=False):
         self.__parameter_dict = {'B_field_type': '6'}
         super(GalMagMixin, self).__init__(hammurabi_executable,
                                           conf_directory,
                                           working_directory_base,
-                                          nside)
+                                          nside,
+                                          analytic_ensemble_mean)
 
     @property
     def magnetic_field_class(self):
