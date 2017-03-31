@@ -42,7 +42,11 @@ class MixinBase(object):
 
         ensemble_space = magnetic_field.domain[0]
         for component in component_names:
+            # It is important to initialize the Observables with an explicit
+            # value. Otherwise the d2o will not instantaneuosly be created
+            # (c.f. lazy object creation).
             observable_dict[component] = Observable(
+                                    val=0,
                                     domain=(ensemble_space, self.__hpSpace),
                                     distribution_strategy='equal')
 
@@ -108,8 +112,8 @@ class MixinBase(object):
         else:
             mean_list = []
             for component in component_names:
-                mean_list += np.empty(dummy_obs_field.domain[1].shape,
-                                      dtype=np.float64)
+                mean_list += [np.empty(dummy_obs_field.domain[1].shape,
+                                       dtype=np.float64)]
 
         for i, component in enumerate(component_names):
             comm.Bcast([mean_list[i], MPI.DOUBLE], root=size-1)
