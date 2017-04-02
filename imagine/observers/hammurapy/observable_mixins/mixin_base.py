@@ -108,6 +108,7 @@ class MixinBase(object):
             mean_list = self._read_fits_file(path=working_directory,
                                              name=obs_name + '.fits',
                                              nside=self.nside)
+            self.logger.debug('Read %s-ensemble-mean.' % obs_name)
 
         else:
             mean_list = []
@@ -116,12 +117,14 @@ class MixinBase(object):
                                        dtype=np.float64)]
 
         for i, component in enumerate(component_names):
+            self.logger.debug('Broadcasting part %i of %s-ensemble-mean.' %
+                              (i, obs_name))
             comm.Bcast([mean_list[i], MPI.DOUBLE], root=size-1)
 
             obs_field = observable_dict[component]
             # at the moment the code is hardwired to np.float64
             assert(obs_field.dtype == np.float64)
-
+            self.logger.debug("Setting up mean-d2o.")
             # put the array into a d2o
             mean_obj = distributed_data_object(global_data=mean_list[i],
                                                dtype=np.float64,
@@ -129,4 +132,5 @@ class MixinBase(object):
                                                comm=comm,
                                                copy=False,
                                                )
+            self.logger.debug("Storing up mean-d2o.")
             obs_field._ensemble_mean = mean_obj
