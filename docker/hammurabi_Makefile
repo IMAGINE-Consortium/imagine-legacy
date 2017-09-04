@@ -50,7 +50,7 @@ CXX = g++
 CXXFLAGS =  -m64 -O2 -fopenmp -Wall
 #
 #  With OSX g++-mp-4.3
-#CXXFLAGS = -fopenmp -O2 -fno-inline-functions -Wall -Wextra -Wno-unknown-pragmas
+#CXXFLAGS = -fopenmp -O2 -g -fno-inline-functions -Wall -Wextra -Wno-unknown-pragmas -ansi
 
 #
 #  Which Fortran compiler you are using?  Only if compiling with NE2001 and/or Galprop
@@ -203,5 +203,8 @@ tarfile:
 	tar cvzf hammurabi.tgz *cpp *h Makefile *.f README hampy
 
 unittar:
-	tar cvzf hammurabi_unit_test.tgz unit_test/inputs unit_test/GALDEF unit_test/FITS unit_test/negrid_n400.bin unit_test/ref.mini unit_test/ref unit_test/ref.big  
+    tar cvzf hammurabi_unit_test_inputs.tgz unit_test/inputs unit_test/GALDEF unit_test/FITS unit_test/negrid_n400.bin 
+    tar cvzf hammurabi_unit_test_ref.tgz unit_test/ref unit_test/ref.big  
+    tar cvzf hammurabi_unit_test_ref.mini.tgz unit_test/ref.mini
+    tar cvzf hammurabi_unit_test_ref.big.tgz unit_test/ref.big  
 
