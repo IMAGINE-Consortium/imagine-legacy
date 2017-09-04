@@ -49,9 +49,7 @@ class EnsembleLikelihood(Likelihood):
 
         # compute quantities for OAS estimator
         mu = np.vdot(u_val, u_val)/n
-        alpha = 0.
-        for i in xrange(n):
-            alpha += np.sum(u_val.T.dot(u_val[:, i])**2)
+        alpha = (np.einsum(u_val, [0, 1], u_val, [2, 0])**2).sum()
 
         numerator = alpha + mu**2
         denominator = (k + 1) / (alpha - (mu**2)/n)
