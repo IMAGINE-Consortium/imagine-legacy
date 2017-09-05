@@ -3,7 +3,7 @@ FROM ubuntu:latest
 RUN apt-get update
 RUN apt-get install -y build-essential python python-pip python-dev git gfortran autoconf gsl-bin libgsl-dev wget unzip
 
-RUN pip install numpy scipy cython astropy ipython
+RUN pip install numpy scipy cython astropy ipython==5.3.0
  
 RUN mkdir /home/Downloads
 WORKDIR /home/Downloads
