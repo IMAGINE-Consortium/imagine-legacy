@@ -10,7 +10,6 @@ class WMAP3yrMixin(object):
 
         self.__parameter_dict = {'B_field_type': '1',
                                  'B_field_do_random': 'T',
-                                 'B_field_RMS_uG': '1.0',
                                  'B_field_z_antisym': '0',
                                  }
         super(WMAP3yrMixin, self).__init__(hammurabi_executable,

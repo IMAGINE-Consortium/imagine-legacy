@@ -17,7 +17,8 @@ class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
             'B_field_b0': 6,
             'B_field_psi0_deg': 27,
             'B_field_psi1_deg': 0.9,
-            'B_field_xsi0_deg': 25
+            'B_field_xsi0_deg': 25,
+            'B_field_RMS_uG': 1.0,
         }
         return defaults
 
@@ -31,5 +32,6 @@ class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
             'B_field_psi0': self._positive_interval(27.0, 5.0, n),  # psi0 astro-ph/0603450
             'B_field_psi1': self._positive_interval(0.9, 5.0, n),  # psi1 astro-ph/0603450
             'B_field_xsi0': self._positive_interval(25, 5.0, n),  # xsi0 astro-ph/0603450
+            'B_field_RMS_uG': self._positive_interal(1.0, 1.0, n)
         }
         return defaults
