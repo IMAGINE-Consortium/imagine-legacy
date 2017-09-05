@@ -44,9 +44,9 @@ RUN pip install healpy
 # RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-41-trunk.zip
 # RUN unzip  hammurabicode-code-41-trunk.zip
 # WORKDIR hammurabicode-code-41-trunk
-RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-52-trunk.zip
-RUN unzip  hammurabicode-code-52-trunk.zip
-WORKDIR hammurabicode-code-52-trunk
+RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-60-trunk.zip
+RUN unzip  hammurabicode-code-60-trunk.zip
+WORKDIR hammurabicode-code-60-trunk
 COPY hammurabi_Makefile Makefile
 RUN [ -r /root/.healpix/3_31_Linux/config ] && . /root/.healpix/3_31_Linux/config && make hammurabi && make clean
 WORKDIR ..

@@ -203,8 +203,8 @@ tarfile:
 	tar cvzf hammurabi.tgz *cpp *h Makefile *.f README hampy
 
 unittar:
-    tar cvzf hammurabi_unit_test_inputs.tgz unit_test/inputs unit_test/GALDEF unit_test/FITS unit_test/negrid_n400.bin 
-    tar cvzf hammurabi_unit_test_ref.tgz unit_test/ref unit_test/ref.big  
-    tar cvzf hammurabi_unit_test_ref.mini.tgz unit_test/ref.mini
-    tar cvzf hammurabi_unit_test_ref.big.tgz unit_test/ref.big  
+	tar cvzf hammurabi_unit_test_inputs.tgz unit_test/inputs unit_test/GALDEF unit_test/FITS unit_test/negrid_n400.bin 
+	tar cvzf hammurabi_unit_test_ref.tgz unit_test/ref unit_test/ref.big  
+	tar cvzf hammurabi_unit_test_ref.mini.tgz unit_test/ref.mini
+	tar cvzf hammurabi_unit_test_ref.big.tgz unit_test/ref.big  
 
