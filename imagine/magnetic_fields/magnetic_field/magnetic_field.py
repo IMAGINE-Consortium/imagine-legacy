@@ -8,7 +8,7 @@ from nifty import Field, FieldArray, RGSpace
 
 
 class MagneticField(Field):
-    def __init__(self, parameters=[], domain=None, val=None, dtype=None,
+    def __init__(self, parameters={}, domain=None, val=None, dtype=None,
                  distribution_strategy=None, copy=False, random_seed=None):
 
         super(MagneticField, self).__init__(

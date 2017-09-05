@@ -11,3 +11,6 @@ from jaffe13_magnetic_field import Jaffe13MagneticField, \
 
 from jf12_magnetic_field import JF12MagneticField, \
                                 JF12MagneticFieldFactory
+
+from wmap3yr_magnetic_field import WMAP3yrMagneticField, \
+                                   WMAP3yrMagneticFieldFactory
