@@ -61,7 +61,7 @@ RUN apt-get update && apt-get install -y libblas3 libblas-dev \
 					 gfortran\
 					 python-tk
 #RUN apt-get install -y libopenmpi-dev openmpi-bin openmpi-doc
-RUN pip install numpy scipy matplotlib progressbar ipython
+RUN pip install numpy scipy matplotlib progressbar ipython==5.3.0
 
 RUN git clone https://github.com/JohannesBuchner/MultiNest.git
 WORKDIR MultiNest/build

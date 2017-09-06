@@ -169,7 +169,7 @@ class Hammurapy(Observer):
             parameter_dict = self.basic_parameters.copy()
 
             # set the parameters for a numerical run
-            parameter_dict['B_field_interp'] = 'T'
+            parameter_dict['B_field_interp'] = 'F'
             parameter_dict['use_B_analytic'] = 'F'
 
             self._build_parameter_dict(
