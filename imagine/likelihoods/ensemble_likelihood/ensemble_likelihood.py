@@ -110,9 +110,7 @@ class EnsembleLikelihood(Likelihood):
         u_a_c_val = np.einsum(c_weighted_val, [1], a_u_val, [0, 1])
 
         first_summand = A.inverse_times(c)
-        self.logger.debug("Calculated first summand.")
         second_summand_val = np.einsum(middle, [0, 1], u_a_c_val, [1])
-        self.logger.debug("Intermediate step.")
         second_summand_val = np.einsum(a_u_val, [0, 1],
                                        second_summand_val, [0])
         second_summand_val *= -1
@@ -122,8 +120,8 @@ class EnsembleLikelihood(Likelihood):
         result_1 = -c.vdot(first_summand)
         result_2 = -c.vdot(second_summand)
         result = result_1 + result_2
-        self.logger.debug("Calculated: %f + %f = %f" %
-                          (result_1, result_2, result))
+        self.logger.debug("Calculated (%s): %f + %f = %f" %
+                          (self.observable_name, result_1, result_2, result))
 #        result_array[i] = result
 #        total_result = result_array.mean()
 

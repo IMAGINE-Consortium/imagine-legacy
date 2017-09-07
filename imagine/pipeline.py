@@ -72,7 +72,7 @@ class Pipeline(Loggable, object):
     def likelihood(self, likelihood):
         self.logger.debug("Setting likelihood.")
         self._likelihood = ()
-        if not (isinstance(likelihood, list) and
+        if not (isinstance(likelihood, list) or
                 isinstance(likelihood, tuple)):
             likelihood = [likelihood]
         for l in likelihood:
