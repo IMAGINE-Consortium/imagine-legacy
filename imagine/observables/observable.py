@@ -27,7 +27,7 @@ class Observable(Field):
             return self._ensemble_mean
 
     def _to_hdf5(self, hdf5_group):
-        if hasattr(self, _ensemble_mean):
+        if hasattr(self, '_ensemble_mean'):
             return_dict = {'ensemble_mean': self._ensemble_mean}
         else:
             return_dict = {}

@@ -35,7 +35,7 @@ class Hammurapy(Observer):
 
         self.basic_parameters = {'B_ran_mem_lim': '6',
                                  'obs_shell_index_numb': '1',
-                                 'total_shell_numb': '3',
+                                 'total_shell_numb': '1',
                                  'vec_size_R': '500',
                                  'max_radius': '30',
                                  'max_z': '15',
@@ -76,6 +76,7 @@ class Hammurapy(Observer):
             errlog = temp_process.communicate()[1]
             # check if there were some errors
             if errlog == '':
+                self.logger.debug("Successfully removed temporary folder.")
                 break
         else:
             self.logger.warning('Could not delete %s' % path)
@@ -169,7 +170,7 @@ class Hammurapy(Observer):
             parameter_dict = self.basic_parameters.copy()
 
             # set the parameters for a numerical run
-            parameter_dict['B_field_interp'] = 'F'
+            parameter_dict['B_field_interp'] = 'T'
             parameter_dict['use_B_analytic'] = 'F'
 
             self._build_parameter_dict(
