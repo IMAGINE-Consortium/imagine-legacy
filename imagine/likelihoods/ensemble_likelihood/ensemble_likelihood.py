@@ -57,7 +57,7 @@ class EnsembleLikelihood(Likelihood):
         if denominator == 0:
             rho = 1
         else:
-            rho = np.min(1, numerator/denominator)
+            rho = np.min([1, numerator/denominator])
 
         # rescale U half/half
         u_val *= np.sqrt(1-rho)
