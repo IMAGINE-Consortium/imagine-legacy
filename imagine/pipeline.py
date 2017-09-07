@@ -197,7 +197,7 @@ class Pipeline(Loggable, object):
                             total_likelihood=total_likelihood)
             self.sample_callback(sample)
 
-        return likelihood
+        return total_likelihood
 
     def __call__(self):
 
