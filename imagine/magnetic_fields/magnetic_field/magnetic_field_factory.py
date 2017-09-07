@@ -111,6 +111,7 @@ class MagneticFieldFactory(Loggable, object):
                 mapping = self.variable_to_parameter_mappings[variable_name]
                 mapped_variable = unity_mapper(variables[variable_name],
                                                a=mapping[0],
+                                               m=mapping[1],
                                                b=mapping[2])
 #                mapped_variable = carrier_mapper(variables[variable_name],
 #                                                 a=mapping[0],

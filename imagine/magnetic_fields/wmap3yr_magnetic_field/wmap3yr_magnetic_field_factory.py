@@ -32,6 +32,6 @@ class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
             'B_field_psi0': self._positive_interval(27.0, 5.0, n),  # psi0 astro-ph/0603450
             'B_field_psi1': self._positive_interval(0.9, 5.0, n),  # psi1 astro-ph/0603450
             'B_field_xsi0': self._positive_interval(25, 5.0, n),  # xsi0 astro-ph/0603450
-            'B_field_RMS_uG': self._positive_interval(1.0, 1.0, n)
+            'B_field_RMS_uG': self._positive_interval(1.0, 2.0, n)
         }
         return defaults
