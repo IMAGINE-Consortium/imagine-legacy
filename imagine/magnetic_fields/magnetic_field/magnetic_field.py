@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from mpi4py import MPI
+
 import simplejson as json
 
 import numpy as np
 
 from nifty import Field, FieldArray, RGSpace
+from d2o import distributed_data_object
+
+comm = MPI.COMM_WORLD
+size = comm.size
+rank = comm.rank
 
 
 class MagneticField(Field):
@@ -27,12 +34,18 @@ class MagneticField(Field):
         for p in self.parameter_list:
             self._parameters[p] = np.float(parameters[p])
 
-        casted_random_seed = np.empty(self.shape[0], dtype=np.int)
+        casted_random_seed = distributed_data_object(
+                                global_shape=(self.shape[0],),
+                                dtype=np.int,
+                                distribution_strategy=distribution_strategy)
+
         if random_seed is None:
             random_seed = np.random.randint(np.uint32(-1)/3,
                                             size=self.shape[0])
+            random_seed = comm.bcast(random_seed, root=0)
+
         casted_random_seed[:] = random_seed
-        self.random_seed = tuple(casted_random_seed)
+        self.random_seed = casted_random_seed
 
     @property
     def parameter_list(self):
@@ -50,13 +63,14 @@ class MagneticField(Field):
 
     def _to_hdf5(self, hdf5_group):
         hdf5_group.attrs['_parameters'] = json.dumps(self._parameters)
-        hdf5_group.create_dataset('random_seed', data=self.random_seed)
-        return super(MagneticField, self)._to_hdf5(hdf5_group=hdf5_group)
+        ret_dict = super(MagneticField, self)._to_hdf5(hdf5_group=hdf5_group)
+        ret_dict['random_seed'] = self.random_seed
+        return ret_dict
 
     @classmethod
     def _from_hdf5(cls, hdf5_group, repository):
         new_field = super(MagneticField, cls)._from_hdf5(hdf5_group=hdf5_group,
                                                          repository=repository)
         new_field._parameters = json.loads(hdf5_group.attrs['_parameters'])
-        new_field.random_seed = tuple(hdf5_group['random_seed'])
+        new_field.random_seed = repository.get('random_seed', hdf5_group)
         return new_field

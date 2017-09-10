@@ -113,7 +113,10 @@ class Hammurapy(Observer):
         lx, ly, lz = np.array(grid_space.shape)*np.array(grid_space.distances)
         nx, ny, nz = grid_space.shape
         if local_ensemble_index is not None:
-            random_seed = magnetic_field.random_seed[local_ensemble_index]
+            # access the magnetic-field's random-seed d2o directly, since we
+            # know that the distribution strategy is the same for the
+            # randam samples and the magnetic field itself
+            random_seed = magnetic_field.random_seed.data[local_ensemble_index]
             parameter_dict.update({'B_field_seed': random_seed})
 
         parameter_dict.update({'B_field_lx': lx,
