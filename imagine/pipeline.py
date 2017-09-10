@@ -227,7 +227,7 @@ class Pipeline(Loggable, object):
         if rank == 0:
             # kickstart pymultinest
             self.logger.info("Starting minimizer.")
-            call_func = lambda z: self._multinest_likelihood(
+            call_func = lambda z: -self._multinest_likelihood(
                                                  z,
                                                  len(self.active_variables),
                                                  len(self.active_variables))
