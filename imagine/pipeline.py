@@ -3,6 +3,8 @@
 import os
 import numpy as np
 
+from scipy import optimize
+
 from mpi4py import MPI
 
 from keepers import Loggable
@@ -217,3 +219,28 @@ class Pipeline(Loggable, object):
         else:
             # let all other nodes listen for likelihood evaluations
             self._listen_for_likelihood_calls()
+
+    def find_minimum(self, starting_guess=None, **kwargs):
+        if starting_guess is None:
+            starting_guess = np.zeros(len(self.active_variables)) + 0.5
+
+        if rank == 0:
+            # kickstart pymultinest
+            self.logger.info("Starting minimizer.")
+            call_func = lambda z: self._multinest_likelihood(
+                                                 z,
+                                                 len(self.active_variables),
+                                                 len(self.active_variables))
+            minimum = optimize.fmin(func=call_func,
+                                    x0=starting_guess,
+                                    **kwargs)
+            self.logger.info("Minimizer finished.")
+            for i in xrange(1, size):
+                self.logger.debug("Sending DIE_TAG to rank %i." % i)
+                comm.send(None, dest=i, tag=DIE_TAG)
+        else:
+            minimum = None
+            # let all other nodes listen for likelihood evaluations
+            self._listen_for_likelihood_calls()
+        minimum = comm.bcast(minimum, root=0)
+        return minimum
