@@ -64,6 +64,8 @@ class EnsembleLikelihood(Likelihood):
         else:
             rho = np.min([1, numerator/denominator])
 
+        self.logger.debug("rho: %f = %f / %f" % (rho, numerator, denominator))
+
         # rescale U half/half
         u_val *= np.sqrt(1-rho)
         U = observable.copy_empty()
@@ -120,8 +122,8 @@ class EnsembleLikelihood(Likelihood):
         result_1 = -c.vdot(first_summand)
         result_2 = -c.vdot(second_summand)
         result = result_1 + result_2
-        self.logger.debug("Calculated (%s): %f + %f = %f" %
-                          (self.observable_name, result_1, result_2, result))
+        self.logger.info("Calculated (%s): %f + %f = %f" %
+                         (self.observable_name, result_1, result_2, result))
 #        result_array[i] = result
 #        total_result = result_array.mean()
 
