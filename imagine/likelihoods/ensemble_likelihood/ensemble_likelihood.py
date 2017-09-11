@@ -57,7 +57,7 @@ class EnsembleLikelihood(Likelihood):
         alpha *= weight**2
 
         numerator = alpha + mu**2
-        denominator = (k + 1) / (alpha - (mu**2)/n)
+        denominator = (k + 1) * (alpha - (mu**2)/n)
 
         if denominator == 0:
             rho = 1
