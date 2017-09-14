@@ -4,8 +4,8 @@ from imagine.magnetic_fields.wmap3yr_magnetic_field import WMAP3yrMagneticField
 
 
 class WMAP3yrMixin(object):
-    __parameter_dict = {('./Galaxy/MagneticField/Random', 'cue'): '1'
-                        }
+    __parameter_dict = {('./Galaxy/MagneticField/Regular', 'type'): 'WMAP',
+                        ('./Galaxy/MagneticField/Random', 'cue'): '1'}
 
     @property
     def magnetic_field_class(self):
