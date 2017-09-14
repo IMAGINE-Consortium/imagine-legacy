@@ -31,7 +31,7 @@ class MagneticField(Field):
         assert(isinstance(self.domain[2], FieldArray))
 
         self._parameters = {}
-        for p in self.parameter_list:
+        for p in self.descriptor_lookup:
             self._parameters[p] = np.float(parameters[p])
 
         casted_random_seed = distributed_data_object(
@@ -48,8 +48,8 @@ class MagneticField(Field):
         self.random_seed = casted_random_seed
 
     @property
-    def parameter_list(self):
-        return []
+    def descriptor_lookup(self):
+        return {}
 
     @property
     def parameters(self):
