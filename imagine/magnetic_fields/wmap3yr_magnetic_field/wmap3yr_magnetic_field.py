@@ -12,8 +12,9 @@ class WMAP3yrMagneticField(MagneticField):
              'psi0': ('./Galaxy/MagneticField/Regular/WMAP/psi0', 'value'),
              'psi1': ('./Galaxy/MagneticField/Regular/WMAP/psi1', 'value'),
              'chi0': ('./Galaxy/MagneticField/Regular/WMAP/chi0', 'value'),
-             'random_rms': ('./Galaxy/MagneticField/Random/rms', 'value'),
-             'random_rho': ('./Galaxy/MagneticField/Random/rho', 'value')}
+             'random_rms': ('./Galaxy/MagneticField/Random/Iso/rms', 'value'),
+             'random_rho': ('./Galaxy/MagneticField/Random/Anisoglob/rho',
+                            'value')}
         return lookup
 
     def _create_field(self):

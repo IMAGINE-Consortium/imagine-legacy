@@ -50,9 +50,12 @@
         <Integration>
             <shell value="1"/>
             <nside value="64"/>
+            <!-- maximum radius in earth/galactic centric frame -->
             <ec_r_max value="30.0"/> <!-- kpc -->
             <gc_r_max value="20.0"/> <!-- kpc -->
+            <!-- maximum height in galactic centric frame -->
             <gc_z_max value="10.0"/> <!-- kpc -->
+            <!-- radial resolution -->
             <ec_r_res value="0.1"/> <!-- kpc -->
             <!-- lower limit on galactic latitude -->
             <lat_lim value="0."/> <!-- [0,90] -->
@@ -82,20 +85,21 @@
                 </Local>
             </Regular>
             <!-- turbulent fields -->
-            <Random cue="0" type="Gauss" seed="-1">
-				<rms value="1.0"/>
-				<rho value="1.0"/>
-                <!-- Gaussian random -->
-                <Gauss>
-                    <p0 value="2.0"/> <!-- norm at k0 -->
-                    <k0 value="1.0"/> <!-- k0 = 1/Lambda in kpc -->
-                    <a0 value="-1.7"/>
-                </Gauss>
-                <!-- Gaussian + Aniso -->
-                <GaussPlus>
-                    <!-- use Gaussian random setting above -->
-                    <beta value="0.5"/>
-                </GaussPlus>
+            <Random cue="0" type="Iso" seed="-1">
+                <!-- isotropic -->
+                <Iso>
+                    <rms value="1.0"/> <!-- norm at k0 -->
+                    <k0 value="0.5"/> <!-- k0 = 1/(Lambda in kpc) -->
+                    <a0 value="1.7"/> <!-- 5/3, Kolmogrov -->
+                </Iso>
+                <!-- global anisotropy -->
+                <Anisoglob>
+                    <rho value="0.5"/>
+                </Anisoglob>
+                <!-- local turbulent -->
+                <Anisolocal>
+                    <beta value="1.0"/>
+                </Anisolocal>
                 <!-- rescaling -->
                 <Rescal>
                     <r0 value="8.0"/> <!-- in kpc -->
@@ -181,12 +185,12 @@
                 
             </YMW16>
             <!-- turbulent free electron -->
-            <Random cue="0" type="Gauss">
-                <Gauss>
-                    <p0 value="1.0"/>
+            <Random cue="0" type="Iso" seed="-1">
+                <Iso>
+                    <rms value="1.0"/>
                     <k0 value="2.0"/> <!-- k0 = 1/Lambda in kpc -->
                     <a0 value="-1.7"/>
-                </Gauss>
+                </Iso>
                 <!-- rescaling -->
                 <Rescal>
                     <r0 value="8.0"/> <!-- in kpc -->
@@ -244,8 +248,5 @@
             <Ekfact value=""/>
         </Numeric>
     </CRE>
-    
-    <!-- DRAGON GRID FOR NUMERICAL CRE INPUT -->
-    
     
 </root>
