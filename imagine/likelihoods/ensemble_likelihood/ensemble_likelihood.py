@@ -40,7 +40,7 @@ class EnsembleLikelihood(Likelihood):
         n = observable.shape[1]
 
         obs_val = observable.val.get_full_data()
-        obs_mean = observable.ensemble_mean().get_full_data()
+        obs_mean = observable.ensemble_mean().val.get_full_data()
 
         # divide out profile
         obs_val /= profile
