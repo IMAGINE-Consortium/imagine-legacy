@@ -50,14 +50,16 @@ class EnsembleLikelihood(Likelihood):
         u_val = obs_val - obs_mean
 
         # compute quantities for OAS estimator
-        mu = np.vdot(u_val, u_val)*weight/n
+        mu = np.vdot(u_val, u_val)*weight/k
+        self.logger.debug("mu: %f" % mu)
+
         alpha = (np.einsum(u_val, [0, 1], u_val, [2, 1])**2).sum()
         # correct the volume factor: one factor comes from the internal scalar
         # product and one from the trace
         alpha *= weight**2
 
-        numerator = alpha + mu**2
-        denominator = (k + 1) * (alpha - (mu**2)/n)
+        numerator = (1 - 2./n)*alpha + mu**2
+        denominator = (k + 1 - 2./n) * (alpha - (mu**2)/n)
 
         if denominator == 0:
             rho = 1
@@ -77,7 +79,7 @@ class EnsembleLikelihood(Likelihood):
                             "DiagonalOperator.")
 
         A_bare_diagonal = data_covariance_operator.diagonal(bare=True)
-        A_bare_diagonal.val += rho*mu
+        A_bare_diagonal.val += rho*mu/n
         A = DiagonalOperator(
                     domain=data_covariance_operator.domain,
                     diagonal=A_bare_diagonal,

@@ -41,14 +41,9 @@ ENV HEALPIX /home/Downloads/Healpix_3.31
 RUN pip install healpy 
 
 #Hammurabi
-# RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-41-trunk.zip
-# RUN unzip  hammurabicode-code-41-trunk.zip
-# WORKDIR hammurabicode-code-41-trunk
-RUN wget https://sourceforge.net/code-snapshots/svn/h/ha/hammurabicode/code/hammurabicode-code-60-trunk.zip
-RUN unzip  hammurabicode-code-60-trunk.zip
-WORKDIR hammurabicode-code-60-trunk
-COPY hammurabi_Makefile Makefile
-RUN [ -r /root/.healpix/3_31_Linux/config ] && . /root/.healpix/3_31_Linux/config && make hammurabi && make clean
+RUN git clone https://bitbucket.org/ricphy/hamx -b generic_makefile
+WORKDIR hamx
+RUN make
 WORKDIR ..
 
 #(Py)MultiNest
@@ -100,6 +95,13 @@ WORKDIR ..
 
 #hampy
 RUN pip install jupyter pandas
+
+#IMAGINE
+RUN git clone https://gitlab.mpcdf.mpg.de/ift/IMAGINE.git -b master
+WORKDIR IMAGINE
+RUN python setup.py install
+WORKDIR ..
+
 
 
 
