@@ -50,16 +50,17 @@ class EnsembleLikelihood(Likelihood):
         u_val = obs_val - obs_mean
 
         # compute quantities for OAS estimator
-        mu = np.vdot(u_val, u_val)*weight/k
+        mu = np.vdot(u_val, u_val)*weight/k/n
         self.logger.debug("mu: %f" % mu)
 
         alpha = (np.einsum(u_val, [0, 1], u_val, [2, 1])**2).sum()
+        alpha /= k*2
         # correct the volume factor: one factor comes from the internal scalar
         # product and one from the trace
         alpha *= weight**2
 
-        numerator = (1 - 2./n)*alpha + mu**2
-        denominator = (k + 1 - 2./n) * (alpha - (mu**2)/n)
+        numerator = (1 - 2./n)*alpha + (mu*n)**2
+        denominator = (k + 1 - 2./n) * (alpha - ((mu*n)**2)/n)
 
         if denominator == 0:
             rho = 1
@@ -79,7 +80,7 @@ class EnsembleLikelihood(Likelihood):
                             "DiagonalOperator.")
 
         A_bare_diagonal = data_covariance_operator.diagonal(bare=True)
-        A_bare_diagonal.val += rho*mu/n
+        A_bare_diagonal.val += rho*mu
         A = DiagonalOperator(
                     domain=data_covariance_operator.domain,
                     diagonal=A_bare_diagonal,
@@ -94,9 +95,6 @@ class EnsembleLikelihood(Likelihood):
                   np.einsum(u_val.conjugate(), [0, 1],
                             a_u_val, [2, 1])*weight)
         middle = np.linalg.inv(middle)
-#        result_array = np.zeros(k)
-#        for i in xrange(k):
-#           c = measured_data - obs_val[i]
         c = measured_data - obs_mean
 
         # assuming that A == A^dagger, this can be shortend
@@ -117,14 +115,14 @@ class EnsembleLikelihood(Likelihood):
         second_summand_val = np.einsum(middle, [0, 1], u_a_c_val, [1])
         second_summand_val = np.einsum(a_u_val, [0, 1],
                                        second_summand_val, [0])
-        second_summand_val *= -1
+        # second_summand_val *= -1
         second_summand = first_summand.copy_empty()
         second_summand.val = second_summand_val
 
-        result_1 = -c.vdot(first_summand)
+        result_1 = c.vdot(first_summand)
         result_2 = -c.vdot(second_summand)
-        result = result_1 + result_2
-        self.logger.info("Calculated (%s): %f + %f = %f" %
+        result = -(result_1 + result_2)
+        self.logger.info("Calculated (%s): -(%f + %f) = %f" %
                          (self.observable_name, result_1, result_2, result))
 #        result_array[i] = result
 #        total_result = result_array.mean()
