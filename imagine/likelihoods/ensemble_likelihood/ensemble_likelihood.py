@@ -70,7 +70,7 @@ class EnsembleLikelihood(Likelihood):
         self.logger.debug("rho: %f = %f / %f" % (rho, numerator, denominator))
 
         # rescale U half/half
-        u_val *= np.sqrt(1-rho)
+        u_val *= np.sqrt(1-rho) / np.sqrt(k)
         U = observable.copy_empty()
         U.val = u_val
 
