@@ -81,14 +81,16 @@ RUN python setup.py build
 RUN python setup.py install 
 WORKDIR ..
 
+#hampy
+RUN pip install jupyter pandas
+
+ARG CACHE_DATE=2017-10-31
+
 #NIFTy
 RUN git clone https://gitlab.mpcdf.mpg.de/ift/NIFTy.git -b master
 WORKDIR NIFTy
 RUN python setup.py install
 WORKDIR ..
-
-#hampy
-RUN pip install jupyter pandas
 
 #Hammurabi
 RUN git clone https://bitbucket.org/ricphy/hamx -b maintenance
