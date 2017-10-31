@@ -269,7 +269,6 @@ class Hammurapy(Observer):
                                      self.last_call_log)
                 raise
             finally:
-                pass
-                #self._remove_folder(working_directory)
+                self._remove_folder(working_directory)
 
         return observable_dict
