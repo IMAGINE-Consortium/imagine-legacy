@@ -40,12 +40,6 @@ ENV HEALPIX /home/Downloads/Healpix_3.31
 #healpy
 RUN pip install healpy 
 
-#Hammurabi
-RUN git clone https://bitbucket.org/ricphy/hamx -b generic_makefile
-WORKDIR hamx
-RUN make
-WORKDIR ..
-
 #(Py)MultiNest
 RUN apt-get update && apt-get install -y libblas3 libblas-dev \
 					 liblapack3 liblapack-dev \
@@ -95,6 +89,13 @@ WORKDIR ..
 
 #hampy
 RUN pip install jupyter pandas
+
+#Hammurabi
+RUN git clone https://bitbucket.org/ricphy/hamx -b maintenance
+WORKDIR hamx
+RUN cp install/Makefile ./
+RUN make -f Makefile
+WORKDIR ..
 
 #IMAGINE
 RUN git clone https://gitlab.mpcdf.mpg.de/ift/IMAGINE.git -b master
