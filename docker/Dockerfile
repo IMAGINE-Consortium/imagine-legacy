@@ -93,7 +93,7 @@ RUN python setup.py install
 WORKDIR ..
 
 #Hammurabi
-RUN git clone https://bitbucket.org/ricphy/hamx -b maintenance
+RUN git clone https://bitbucket.org/ricphy/hamx -b flexible_output
 WORKDIR hamx
 RUN cp install/Makefile ./
 RUN make -f Makefile
