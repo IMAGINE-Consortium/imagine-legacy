@@ -46,6 +46,7 @@ class Pipeline(Loggable, object):
         self.prior = prior
         self.active_variables = active_variables
         self.ensemble_size = ensemble_size
+        self.likelihood_rescaler = 1.
 
         # setting defaults for pymultinest
         self.pymultinest_parameters = {'verbose': True,
@@ -199,7 +200,7 @@ class Pipeline(Loggable, object):
                             total_likelihood=total_likelihood)
             self.sample_callback(sample)
 
-        return total_likelihood
+        return total_likelihood * self.likelihood_rescaler
 
     def __call__(self):
 
