@@ -98,62 +98,6 @@ class Hammurapy(Observer):
                                     distribution_strategy='equal')
         return observable_dict
 
-    def _build_parameter_dict(self, parameter_dict, magnetic_field,
-                              local_ensemble_index):
-
-        parameter_dict.update(self.magnetic_field_model.parameter_dict)
-
-        parameter_dict.update(
-                {('./Interface/fe_grid', 'read'): '1',
-                 ('./Interface/fe_grid', 'filename'):
-                     os.path.join(self.input_directory, 'fe_grid.bin'),
-                 })
-        # access the magnetic-field's random-seed d2o directly, since we
-        # know that the distribution strategy is the same for the
-        # randam samples and the magnetic field itself
-        random_seed = magnetic_field.random_seed.data[local_ensemble_index]
-        parameter_dict.update(
-                {('./Galaxy/MagneticField/Random', 'seed'): random_seed})
-
-        for key, value in magnetic_field.parameters.iteritems():
-            large_key = magnetic_field.descriptor_lookup[key]
-            parameter_dict[large_key] = value
-
-        grid_space = magnetic_field.domain[1]
-        lx, ly, lz = np.array(grid_space.shape)*np.array(grid_space.distances)
-        nx, ny, nz = grid_space.shape
-
-        parameter_dict.update({('./Grid/Box/lx', 'value'): lx,
-                               ('./Grid/Box/ly', 'value'): ly,
-                               ('./Grid/Box/lz', 'value'): lz,
-                               ('./Grid/Box/nx', 'value'): nx,
-                               ('./Grid/Box/ny', 'value'): ny,
-                               ('./Grid/Box/nz', 'value'): nz})
-        parameter_dict.update(
-                {('./Grid/Integration/nside', 'value'): self.nside})
-
-    def _write_parameter_file(self, working_directory):
-        # load the default xml
-        try:
-            default_parameters_xml = os.path.join(self.input_directory,
-                                                  'default_parameters.xml')
-            tree = et.parse(default_parameters_xml)
-        except IOError:
-            import imagine
-            module_path = os.path.split(
-                            imagine.observers.hammurapy.__file__)[0]
-            default_parameters_xml = os.path.join(
-                                module_path, 'input/default_parameters.xml')
-            tree = et.parse(default_parameters_xml)
-
-        root = tree.getroot()
-        for key, value in parameter_dict.iteritems():
-            root.find(key[0]).set(key[1], str(value))
-
-        parameters_file_path = os.path.join(working_directory,
-                                            'parameters.xml')
-        tree.write(parameters_file_path)
-
     def _write_parameter_xml(self, magnetic_field, local_ensemble_index,
                              working_directory):
         # load the default xml
@@ -175,6 +119,7 @@ class Hammurapy(Observer):
         custom_parameters = [
                 ['./Grid/Integration/shell/auto/nside_min', 'value',
                  self.nside],
+                ['./Grid/Integration/nside_sim', 'value', self.nside],
                 ['./Interface/fe_grid', 'read', '1'],
                 ['./Interface/fe_grid', 'filename',
                  os.path.join(self.input_directory, 'fe_grid.bin')]

@@ -33,12 +33,8 @@ def infinity_mapper(x, a=-np.inf, m=0, b=np.inf):
     return y
 
 
-def unity_mapper(x, a=0, m=0.5, b=1):
+def unity_mapper(x, a=0, b=1):
     """
     Maps x from [0, 1] into the interval [a, b]
     """
-    # rescale and shift
-    if x <= 0.5:
-        return 2*x * (m-a) + a
-    else:
-        return (2*x-1) * (b-m) + m
+    return x * (b-a) + a

@@ -69,11 +69,11 @@ class MagneticFieldFactory(Loggable, object):
 
     @staticmethod
     def _interval(mean, sigma, n):
-        return [mean-n*sigma, mean, mean+n*sigma]
+        return [mean-n*sigma, mean+n*sigma]
 
     @staticmethod
     def _positive_interval(mean, sigma, n):
-        return [max(0, mean-n*sigma), mean, mean+n*sigma]
+        return [max(0, mean-n*sigma), mean+n*sigma]
 
     @property
     def parameter_defaults(self):
@@ -86,6 +86,15 @@ class MagneticFieldFactory(Loggable, object):
                                         if k in self._parameter_defaults)
 
     @property
+    def variable_defaults(self):
+        variable_defaults = {}
+        for parameter in self.parameter_defaults:
+            low, high = self.variable_to_parameter_mappings[parameter]
+            default = self.parameter_defaults[parameter]
+            variable_defaults[parameter] = (default - low)/(high - low)
+        return variable_defaults
+
+    @property
     def variable_to_parameter_mappings(self):
         return self._variable_to_parameter_mappings
 
@@ -94,7 +103,7 @@ class MagneticFieldFactory(Loggable, object):
         """
         The parameter-mapping must be a dictionary with
         key: parameter-name
-        value: [min, mean, max]
+        value: [min, max]
         """
         for k, v in new_mapping.items():
             if k in self._variable_to_parameter_mappings:
@@ -111,8 +120,7 @@ class MagneticFieldFactory(Loggable, object):
                 mapping = self.variable_to_parameter_mappings[variable_name]
                 mapped_variable = unity_mapper(variables[variable_name],
                                                a=mapping[0],
-                                               m=mapping[1],
-                                               b=mapping[2])
+                                               b=mapping[1])
 #                mapped_variable = carrier_mapper(variables[variable_name],
 #                                                 a=mapping[0],
 #                                                 m=mapping[1],
