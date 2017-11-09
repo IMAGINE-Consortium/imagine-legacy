@@ -112,7 +112,7 @@ class EnsembleLikelihood(Likelihood):
 
         # If the data was incomplete, i.e. contains np.NANs, set those values
         # to zero.
-        np.nan_to_num(c, copy=False)
+        c = np.nan_to_num(c)
 
         # assuming that A == A^dagger, this can be shortend
         # a_c = A.inverse_times(c)
