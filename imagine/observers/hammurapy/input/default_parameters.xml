@@ -71,7 +71,7 @@
             </shell>
             <nside_sim value="16"/> <!-- output map resolution -->
             <!-- maximum radius in earth/Galactic centric frame -->
-            <ec_r_max value="3.0"/> <!-- kpc -->
+            <ec_r_max value="30.0"/> <!-- kpc -->
             <gc_r_max value="20.0"/> <!-- kpc -->
             <!-- maximum height in galactic centric frame -->
             <gc_z_max value="10.0"/> <!-- kpc -->
