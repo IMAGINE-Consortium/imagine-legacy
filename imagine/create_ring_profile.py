@@ -11,8 +11,12 @@ def create_ring_profile(input_map):
 
     rings = hp.pix2ring(nside, np.arange(npix)) - 1
 
-    rho = np.bincount(rings)
-    averages = np.bincount(rings, weights=input_map)/rho
+    mask = np.ones([npix])
+    mask[np.isnan(input_map)] = 0
+    rho = np.bincount(rings, weights=mask)
+    averages = np.bincount(rings, weights=np.nan_to_num(input_map))/rho
+    # set profile for empty rings to 1
+    averages[np.isnan(averages)] = 1
 
     result = averages[rings]
 
