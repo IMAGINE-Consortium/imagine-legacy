@@ -27,7 +27,7 @@ class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
 
     def _generate_variable_to_parameter_mapping_defaults(self, n):
         defaults = {
-            'b0': self._positive_interval(6.0, 2.0, n),  # b0 astro-ph/0603450
+            'b0': self._positive_interval(6.0, 1.8, n),  # b0 astro-ph/0603450
             'psi0': self._positive_interval(27.0, 5.0, n),  # psi0 astro-ph/0603450
             'psi1': self._positive_interval(0.9, 5.0, n),  # psi1 astro-ph/0603450
             'chi0': self._positive_interval(25, 5.0, n),  # xsi0 astro-ph/0603450
