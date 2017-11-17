@@ -154,12 +154,11 @@ class Pipeline(Loggable, object):
         if rank != 0:
             raise RuntimeError("_multinest_likelihood must only be called on "
                                "rank==0.")
-        for i in xrange(1, size):
-            comm.send(cube_content, dest=i, tag=WORK_TAG)
-        self.logger.debug("Sent multinest-cube to nodes with rank > 0.")
-
         error_count = 0
         while error_count < 5:
+            for i in xrange(1, size):
+                comm.send(cube_content, dest=i, tag=WORK_TAG)
+            self.logger.debug("Sent multinest-cube to nodes with rank > 0.")
             likelihood = self._core_likelihood(cube_content)
             if likelihood < 0:
                 break
