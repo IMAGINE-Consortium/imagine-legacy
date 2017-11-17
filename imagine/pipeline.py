@@ -144,6 +144,13 @@ class Pipeline(Loggable, object):
         cube_content = np.empty(ndim)
         for i in xrange(ndim):
             cube_content[i] = cube[i]
+
+        # heuristic for minimizers:
+        # if a parameter value from outside of the cube is requested, return
+        # the worst possible likelihood value
+        if np.any(abs(cube_content) > 1.):
+            return np.nan_to_num(-np.inf)
+
         if rank != 0:
             raise RuntimeError("_multinest_likelihood must only be called on "
                                "rank==0.")
