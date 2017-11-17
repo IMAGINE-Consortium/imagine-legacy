@@ -151,7 +151,15 @@ class Pipeline(Loggable, object):
             comm.send(cube_content, dest=i, tag=WORK_TAG)
         self.logger.debug("Sent multinest-cube to nodes with rank > 0.")
 
-        return self._core_likelihood(cube_content)
+        error_count = 0
+        while error_count < 5:
+            likelihood = self._core_likelihood(cube_content)
+            if likelihood < 0:
+                break
+            else:
+                self.logger.error("Positive log-likelihood value encountered!"
+                                  "Redoing calculation.")
+        return likelihood
 
     def _listen_for_likelihood_calls(self):
         status = MPI.Status()
