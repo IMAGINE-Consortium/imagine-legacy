@@ -244,7 +244,7 @@ class Pipeline(Loggable, object):
                                                  z,
                                                  len(self.active_variables),
                                                  len(self.active_variables))
-            minimum = optimize.minimize(func=call_func,
+            minimum = optimize.minimize(fun=call_func,
                                         x0=starting_guess,
                                         method=method,
                                         **kwargs)
