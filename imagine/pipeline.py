@@ -57,6 +57,7 @@ class Pipeline(Loggable, object):
         self.sample_callback = sample_callback
 
         self.fixed_random_seed = None
+        self.check_threshold = False
 
     @property
     def observer(self):
@@ -160,7 +161,8 @@ class Pipeline(Loggable, object):
                 comm.send(cube_content, dest=i, tag=WORK_TAG)
             self.logger.debug("Sent multinest-cube to nodes with rank > 0.")
             likelihood = self._core_likelihood(cube_content)
-            if likelihood < 0:
+            if likelihood < self.likelihood_threshold or \
+               not self.check_threshold:
                 break
             else:
                 self.logger.error("Positive log-likelihood value encountered!"
