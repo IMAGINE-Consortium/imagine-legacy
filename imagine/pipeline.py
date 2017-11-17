@@ -57,6 +57,7 @@ class Pipeline(Loggable, object):
         self.sample_callback = sample_callback
 
         self.fixed_random_seed = None
+        self.likelihood_threshold = 0.
         self.check_threshold = False
 
     @property
