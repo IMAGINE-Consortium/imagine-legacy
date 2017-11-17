@@ -56,6 +56,8 @@ class Pipeline(Loggable, object):
 
         self.sample_callback = sample_callback
 
+        self.fixed_random_seed = None
+
     @property
     def observer(self):
         return self._observer
@@ -172,8 +174,9 @@ class Pipeline(Loggable, object):
         # create magnetic field
         self.logger.debug("Creating magnetic field.")
         b_field = self.magnetic_field_factory.generate(
-                                              variables=variables,
-                                              ensemble_size=self.ensemble_size)
+                                          variables=variables,
+                                          ensemble_size=self.ensemble_size,
+                                          random_seed=self.fixed_random_seed)
 
         # create observables
         self.logger.debug("Creating observables.")

@@ -130,7 +130,7 @@ class MagneticFieldFactory(Loggable, object):
             parameter_dict[variable_name] = mapped_variable
         return parameter_dict
 
-    def generate(self, variables={}, ensemble_size=1):
+    def generate(self, variables={}, ensemble_size=1, random_seed=None):
         mapped_variables = self._map_variables_to_parameters(variables)
         work_parameters = self.parameter_defaults.copy()
         work_parameters.update(mapped_variables)
@@ -142,7 +142,8 @@ class MagneticFieldFactory(Loggable, object):
         result_magnetic_field = self.magnetic_field_class(
                                               domain=domain,
                                               parameters=work_parameters,
-                                              distribution_strategy='equal')
+                                              distribution_strategy='equal',
+                                              random_seed=random_seed)
         self.logger.debug("Generated magnetic field with work-parameters %s" %
                           work_parameters)
         return result_magnetic_field
