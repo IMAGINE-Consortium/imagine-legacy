@@ -224,7 +224,8 @@ class Pipeline(Loggable, object):
             # let all other nodes listen for likelihood evaluations
             self._listen_for_likelihood_calls()
 
-    def find_minimum(self, starting_guess=None, **kwargs):
+    def find_minimum(self, starting_guess=None, method='Nelder-Mead',
+                     **kwargs):
         if starting_guess is None:
             starting_guess = np.zeros(len(self.active_variables)) + 0.5
 
@@ -235,9 +236,10 @@ class Pipeline(Loggable, object):
                                                  z,
                                                  len(self.active_variables),
                                                  len(self.active_variables))
-            minimum = optimize.fmin(func=call_func,
-                                    x0=starting_guess,
-                                    **kwargs)
+            minimum = optimize.minimize(func=call_func,
+                                        x0=starting_guess,
+                                        method=method,
+                                        **kwargs)
             self.logger.info("Minimizer finished.")
             for i in xrange(1, size):
                 self.logger.debug("Sending DIE_TAG to rank %i." % i)
