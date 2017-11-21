@@ -6,6 +6,7 @@
 <root>
     
     <Output>
+
     </Output>
     
     <!-- physical field grid in/out -->
@@ -51,7 +52,7 @@
                 <!-- default setting of shells -->
                 <auto>
                     <shell_num value="1"/> <!-- total shell number -->
-                    <nside_min value="16"/> <!-- inner most shell resolution -->
+                    <nside_min value="64"/> <!-- inner most shell resolution -->
                 </auto>
                 <!-- set shell resolution from inside out -->
                 <!-- total shell number calculated automatically -->
@@ -60,7 +61,7 @@
                     <nside value="16"/>
                 </manual>
             </shell>
-            <nside_sim value="16"/> <!-- output map resolution -->
+            <nside_sim value="64"/> <!-- output map resolution -->
             <!-- maximum radius in earth/Galactic centric frame -->
             <ec_r_max value="30.0"/> <!-- kpc -->
             <gc_r_max value="20.0"/> <!-- kpc -->
@@ -95,7 +96,7 @@
             </Regular>
             <!-- turbulent fields -->
             <!-- seed works for IMAGINE -->
-            <Random cue="0" type="Anisolocal" seed="-1">
+            <Random cue="0" type="Anisolocal" seed="0">
                 <!-- isotropic -->
                 <Iso>
                     <rms value="0.1"/> <!-- norm at k0 -->
@@ -209,7 +210,7 @@
                 </Verify>
             </Regular>
             <!-- turbulent free electron -->
-            <Random cue="0" type="Iso" seed="-1">
+            <Random cue="0" type="Iso" seed="0">
                 <Iso>
                     <rms value="1.0"/>
                     <k0 value="2.0"/> <!-- cutoff 1/Lambda in kpc -->
