@@ -108,8 +108,8 @@ class MagneticFieldFactory(Loggable, object):
         for k, v in new_mapping.items():
             if k in self._variable_to_parameter_mappings:
                 key = str(k)
-                value = [np.float(v[1]), np.float(v[2]), np.float(v[3])]
-                self._variable_to_parameter_mappings.update((key, value))
+                value = [np.float(v[0]), np.float(v[1])]
+                self._variable_to_parameter_mappings.update({key: value})
                 self.logger.debug("Updated variable_to_parameter_mapping %s "
                                   "to %s" % (key, str(value)))
 

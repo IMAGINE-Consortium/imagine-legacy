@@ -152,7 +152,7 @@ class Pipeline(Loggable, object):
         # the worst possible likelihood value
         if np.any(cube_content > 1.) or np.any(cube_content < 0.):
             self.logger.info('Cube %s requested. Returned most negative '
-                             'possible number.')
+                             'possible number.' % cube_content)
             return np.nan_to_num(-np.inf)
 
         if rank != 0:
