@@ -120,9 +120,9 @@ class Hammurapy(Observer):
                 ['./Grid/Integration/shell/auto/nside_min', 'value',
                  self.nside],
                 ['./Grid/Integration/nside_sim', 'value', self.nside],
-                ['./Interface/fe_grid', 'read', '1'],
-                ['./Interface/fe_grid', 'filename',
-                 os.path.join(self.input_directory, 'fe_grid.bin')]
+#                ['./Interface/fe_grid', 'read', '1'],
+#                ['./Interface/fe_grid', 'filename',
+#                 os.path.join(self.input_directory, 'fe_grid.bin')]
                              ]
 
         # access the magnetic-field's random-eed d2o directly, since we
