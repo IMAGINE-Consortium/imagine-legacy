@@ -129,7 +129,7 @@ class Hammurapy(Observer):
         # know that the distribution strategy is the same for the
         # randam samples and the magnetic field itself
         random_seed = magnetic_field.random_seed.data[local_ensemble_index]
-        custom_parameters += [['./Galaxy/MagneticField/Random', 'seed',
+        custom_parameters += [['./MagneticField/Random', 'seed',
                                random_seed]]
 
         for key, value in magnetic_field.parameters.iteritems():
