@@ -17,5 +17,5 @@ class FDMixin(ObservableMixin):
     def update_parameter_xml(self, root):
         element = et.Element('Faraday', {'cue': '1',
                                          'filename': self.obs_name+'.fits'})
-        output = root.find('Output')
+        output = root.find('Obsout')
         output.append(element)
