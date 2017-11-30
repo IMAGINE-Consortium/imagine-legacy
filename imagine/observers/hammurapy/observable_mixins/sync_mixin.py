@@ -23,5 +23,5 @@ class SyncMixin(ObservableMixin):
         element = et.Element('Sync', {'cue': '1',
                                       'freq': self.frequency,
                                       'filename': self.obs_name+'.fits'})
-        output = root.find('Output')
+        output = root.find('Obsout')
         output.append(element)
