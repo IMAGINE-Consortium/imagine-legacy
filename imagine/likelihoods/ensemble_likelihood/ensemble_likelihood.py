@@ -114,7 +114,6 @@ class EnsembleLikelihood(Likelihood):
         result_1 = np.vdot(c_val, first_summand_val)
         result_2 = -np.vdot(c_val, second_summand_val)
         result = -(result_1 + result_2)
-        print (result_1, result_2, result)
         self.logger.info("Calculated (%s): -(%f + %f) = %f" %
                          (self.observable_name, result_1, result_2, result))
 #        result_array[i] = result
