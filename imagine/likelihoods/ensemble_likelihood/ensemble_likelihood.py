@@ -113,9 +113,19 @@ class EnsembleLikelihood(Likelihood):
 
         result_1 = np.vdot(c_val, first_summand_val)
         result_2 = -np.vdot(c_val, second_summand_val)
-        result = -(result_1 + result_2)
-        self.logger.info("Calculated (%s): -(%f + %f) = %f" %
-                         (self.observable_name, result_1, result_2, result))
+
+        # compute regularizing determinant of the covariance
+        # det(A + UV^T) =  det(A) det(I + V^T A^-1 U)
+        log_det_1 = np.sum(np.log(A_diagonal_val))
+        (sign, log_det_2) = np.slogdet(middle)
+        if sign < 0:
+            self.logger.error("Negative determinant of covariance!")
+
+        result = -0.5*(result_1 + result_2 + log_det_1 + log_det_2)
+
+        self.logger.info("Calculated (%s): -(%g + %g + %g + %g) = %f" %
+                         (self.observable_name,
+                          result_1, result_2, log_det_1, log_det_2))
 #        result_array[i] = result
 #        total_result = result_array.mean()
 
