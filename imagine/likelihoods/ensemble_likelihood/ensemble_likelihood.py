@@ -123,9 +123,9 @@ class EnsembleLikelihood(Likelihood):
 
         result = -0.5*(result_1 + result_2 + log_det_1 + log_det_2)
 
-        self.logger.info("Calculated (%s): -(%g + %g + %g + %g) = %f" %
+        self.logger.info("Calculated (%s): -(%g + %g + %g + %g) = %g" %
                          (self.observable_name,
-                          result_1, result_2, log_det_1, log_det_2))
+                          result_1, result_2, log_det_1, log_det_2, result))
 #        result_array[i] = result
 #        total_result = result_array.mean()
 
