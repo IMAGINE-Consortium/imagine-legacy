@@ -6,7 +6,6 @@
 <root>
     <!-- observable output -->
     <Obsout>
-
     </Obsout>
     <!-- physical field grid in/out -->
     <!-- resolution defined in './Grid/Box' -->
@@ -74,7 +73,7 @@
     <!-- magnetic fields -->
     <MagneticField>
         <!-- regular fields -->
-        <Regular type="WMAP">
+        <Regular type="Verify">
             <!-- WMAP LSA -->
             <WMAP>
                 <b0 value="1.2"/> <!-- microG -->
@@ -266,9 +265,11 @@
             <alpha value="3.0"/>
             <beta value="0.0"/>
             <theta value="0.0"/>
-            <hr value="5.0"/> <!-- kpc -->
-            <hz value="1.0"/> <!-- kpc -->
-            <je value="0.25"/> <!-- local CRE flux norm factor @ 10GeV -->
+            <r0 value="5.0"/> <!-- kpc -->
+            <z0 value="1.0"/> <!-- kpc -->
+            <!-- by default, we choose AMS02 20.6GeV -->
+            <E0 value="20.6"/> <!-- CRE kinetic energy reference, GeV -->
+            <j0 value="0.0217"/> <!-- local CRE flux norm factor @ E0 -->
         </Analytic>
         
         <Numeric type="2D">
@@ -297,7 +298,9 @@
         <Verify>
             <alpha value="3.0"/>
             <r0 value="3.0"/> <!-- cutoff radius, kpc -->
-            <je value="0.25"/> <!-- local CRE flux norm factor @ 10GeV -->
+            <!-- by default, we choose AMS02 20.6GeV -->
+            <E0 value="20.6"/> <!-- CRE kinetic energy reference, GeV -->
+            <j0 value="0.0217"/> <!-- local CRE flux norm factor @ E0 -->
         </Verify>
     </CRE>
 </root>

@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from nifty import DiagonalOperator, FieldArray, Field
+from nifty import FieldArray, Field
 
 from imagine.likelihoods.likelihood import Likelihood
 
@@ -30,7 +30,7 @@ class EnsembleLikelihood(Likelihood):
                                           self.data_covariance_operator)
 
     def _process_simple_field(self, observable, measured_data,
-                              data_covariance_operator):
+                              data_covariance):
         # https://en.wikipedia.org/wiki/Sherman%E2%80%93Morrison_formula#Generalization
         # B = A^{-1} + U U^dagger
         # A = data_covariance
@@ -50,7 +50,7 @@ class EnsembleLikelihood(Likelihood):
         self.logger.debug("mu: %f" % mu)
 
         alpha = (np.einsum(u_val, [0, 1], u_val, [2, 1])**2).sum()
-        alpha /= k*2
+        alpha /= k**2
 
         numerator = (1 - 2./n)*alpha + (mu*n)**2
         denominator = (k + 1 - 2./n) * (alpha - ((mu*n)**2)/n)
@@ -65,12 +65,7 @@ class EnsembleLikelihood(Likelihood):
         # rescale U half/half
         u_val *= np.sqrt(1-rho) / np.sqrt(k)
 
-        # we assume that data_covariance_operator is a DiagonalOperator
-        if not isinstance(data_covariance_operator, DiagonalOperator):
-            raise TypeError("data_covariance_operator must be a NIFTY "
-                            "DiagonalOperator.")
-
-        A_diagonal_val = data_covariance_operator.diagonal(bare=False).val
+        A_diagonal_val = data_covariance
         self.logger.info(('rho*mu', rho*mu,
                           'rho', rho,
                           'mu', mu,
