@@ -9,10 +9,12 @@ from imagine.likelihoods.likelihood import Likelihood
 
 class EnsembleLikelihood(Likelihood):
     def __init__(self, observable_name,  measured_data,
-                 data_covariance_operator, profile=None):
+                 data_covariance, profile=None):
         self.observable_name = observable_name
         self.measured_data = self._strip_data(measured_data)
-        self.data_covariance_operator = data_covariance_operator
+        if isinstance(data_covariance, Field):
+            data_covariance = data_covariance.val.get_full_data()
+        self.data_covariance = data_covariance
 
     def _strip_data(self, data):
         # if the first element in the domain tuple is a FieldArray we must
@@ -27,7 +29,7 @@ class EnsembleLikelihood(Likelihood):
         field = observable[self.observable_name]
         return self._process_simple_field(field,
                                           self.measured_data,
-                                          self.data_covariance_operator)
+                                          self.data_covariance)
 
     def _process_simple_field(self, observable, measured_data,
                               data_covariance):
