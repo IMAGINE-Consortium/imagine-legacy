@@ -38,7 +38,7 @@ class EnsembleLikelihood(Likelihood):
         # A = data_covariance
         # B^{-1} c = (A_inv -
         #             A_inv U (I_k + U^dagger A_inv U)^{-1} U^dagger A_inv) c
-
+        data_covariance = data_covariance.copy()
         k = observable.shape[0]
         n = observable.shape[1]
 
