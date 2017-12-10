@@ -46,10 +46,11 @@ class EnsembleLikelihood(Likelihood):
         obs_mean = observable.ensemble_mean().val.get_full_data()
 
         u_val = obs_val - obs_mean
-
+        self.logger.debug(('obs_val', obs_val))
+        self.logger.debug(('obs_mean', obs_mean))
         # compute quantities for OAS estimator
         mu = np.vdot(u_val, u_val)/k/n
-        self.logger.debug("mu: %f" % mu)
+        self.logger.debug(("mu", mu))
 
         alpha = (np.einsum(u_val, [0, 1], u_val, [2, 1])**2).sum()
         alpha /= k**2

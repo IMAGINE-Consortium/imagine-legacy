@@ -129,6 +129,8 @@ class Hammurapy(Observer):
         # know that the distribution strategy is the same for the
         # randam samples and the magnetic field itself
         random_seed = magnetic_field.random_seed.data[local_ensemble_index]
+        self.logger.debug("Local ensemble index %i uses random seed %i" %
+                          (local_ensemble_index, random_seed))
         custom_parameters += [['./MagneticField/Random', 'seed',
                                random_seed]]
 
