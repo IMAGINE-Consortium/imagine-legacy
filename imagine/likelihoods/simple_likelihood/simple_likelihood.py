@@ -8,7 +8,7 @@ from imagine.likelihoods.likelihood import Likelihood
 
 class SimpleLikelihood(Likelihood):
     def __init__(self, measured_data, data_covariance=None):
-        self.measured_data = measured_data
+        self.measured_data = self._strip_data(measured_data)
         if isinstance(data_covariance, Field):
             data_covariance = data_covariance.val.get_full_data()
         self.data_covariance = data_covariance
