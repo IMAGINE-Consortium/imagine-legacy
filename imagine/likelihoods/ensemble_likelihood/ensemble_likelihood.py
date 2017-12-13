@@ -55,7 +55,8 @@ class EnsembleLikelihood(Likelihood):
         u_val *= np.sqrt(1-rho) / np.sqrt(k)
 
         A_diagonal_val = data_covariance
-        self.logger.info(('rho*mu', rho*mu,
+        self.logger.info(('A_mean', np.mean(A_diagonal_val),
+                          'rho*mu', rho*mu,
                           'rho', rho,
                           'mu', mu,
                           'alpha', alpha))
