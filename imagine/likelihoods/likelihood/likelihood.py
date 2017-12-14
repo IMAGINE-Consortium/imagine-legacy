@@ -15,6 +15,9 @@ class Likelihood(Loggable, object):
     def _strip_data(self, data):
         # if the first element in the domain tuple is a FieldArray we must
         # extract the data
+        if not hasattr(data, 'domain'):
+            return data
+
         if isinstance(data.domain[0], FieldArray):
             data = data.val.get_full_data()[0]
         else:
