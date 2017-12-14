@@ -98,15 +98,17 @@ class EnsembleLikelihood(Likelihood):
         result_1 = np.vdot(c, first_summand_val)
         result_2 = -np.vdot(c, second_summand_val)
 
-        result_1 /= n
-        result_2 /= n
-
         # compute regularizing determinant of the covariance
         # det(A + UV^T) =  det(A) det(I + V^T A^-1 U)
         log_det_1 = np.sum(np.log(B))
         (sign, log_det_2) = np.linalg.slogdet(middle)
         if sign < 0:
             self.logger.error("Negative determinant of covariance!")
+
+        result_1 /= n
+        result_2 /= n
+        log_det_1 /= n
+        log_det_2 /= n
 
         result = -0.5*(result_1 + result_2 + log_det_1 + log_det_2)
 
