@@ -37,7 +37,7 @@ class EnsembleLikelihood(Likelihood):
         obs_mean = observable.ensemble_mean().val.get_full_data()
 
         U = obs_val - obs_mean
-        U *= np.sqrt(n)
+        #U *= np.sqrt(n)
         # compute quantities for OAS estimator
         mu = np.vdot(U, U)/k/n
         alpha = (np.einsum(U, [0, 1], U, [2, 1])**2).sum()
@@ -105,7 +105,7 @@ class EnsembleLikelihood(Likelihood):
         if sign < 0:
             self.logger.error("Negative determinant of covariance!")
 
-        result = -0.5*(result_1 + result_2 + log_det_1 + log_det_2)
+        result = -0.5*((result_1 + result_2)/n + log_det_1 + log_det_2)
 
         self.logger.info("Calculated (%s): -(%g + %g + %g + %g) = %g" %
                          (self.observable_name,
