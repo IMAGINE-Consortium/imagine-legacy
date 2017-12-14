@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from nifty import FieldArray, Field
+from nifty import Field
 
 from imagine.likelihoods.likelihood import Likelihood
 
@@ -15,6 +15,7 @@ class EnsembleLikelihood(Likelihood):
         if isinstance(data_covariance, Field):
             data_covariance = data_covariance.val.get_full_data()
         self.data_covariance = data_covariance
+        self.use_determinant = True
 
     def __call__(self, observable):
         field = observable[self.observable_name]
@@ -37,7 +38,8 @@ class EnsembleLikelihood(Likelihood):
         obs_mean = observable.ensemble_mean().val.get_full_data()
 
         U = obs_val - obs_mean
-        #U *= np.sqrt(n)
+        U *= np.sqrt(n)
+
         # compute quantities for OAS estimator
         mu = np.vdot(U, U)/k/n
         alpha = (np.einsum(U, [0, 1], U, [2, 1])**2).sum()
@@ -100,15 +102,14 @@ class EnsembleLikelihood(Likelihood):
 
         # compute regularizing determinant of the covariance
         # det(A + UV^T) =  det(A) det(I + V^T A^-1 U)
-        log_det_1 = np.sum(np.log(B))
-        (sign, log_det_2) = np.linalg.slogdet(middle)
-        if sign < 0:
-            self.logger.error("Negative determinant of covariance!")
-
-        result_1 /= n
-        result_2 /= n
-        log_det_1 /= n
-        log_det_2 /= n
+        if self.use_determinant:
+            log_det_1 = np.sum(np.log(B))
+            (sign, log_det_2) = np.linalg.slogdet(middle)
+            if sign < 0:
+                self.logger.error("Negative determinant of covariance!")
+        else:
+            log_det_1 = 0.
+            log_det_2 = 0.
 
         result = -0.5*(result_1 + result_2 + log_det_1 + log_det_2)
 
