@@ -21,7 +21,7 @@ class SimpleLikelihood(Likelihood):
 
         diff = data - obs_mean
         if self.data_covariance is not None:
-            right = diff/self.data_covariance_operator
+            right = diff/self.data_covariance
         else:
             right = diff
         return -0.5 * np.vdot(diff, right)
