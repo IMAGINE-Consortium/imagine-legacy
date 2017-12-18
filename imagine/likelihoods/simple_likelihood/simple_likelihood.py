@@ -7,7 +7,8 @@ from imagine.likelihoods.likelihood import Likelihood
 
 
 class SimpleLikelihood(Likelihood):
-    def __init__(self, measured_data, data_covariance=None):
+    def __init__(self, observable_name, measured_data, data_covariance=None):
+        self.observable_name = observable_name
         self.measured_data = self._strip_data(measured_data)
         if isinstance(data_covariance, Field):
             data_covariance = data_covariance.val.get_full_data()
@@ -15,7 +16,8 @@ class SimpleLikelihood(Likelihood):
 
     def __call__(self, observable):
         data = self.measured_data
-        obs_mean = observable.ensemble_mean().val.get_full_data()
+        field = observable[self.observable_name]
+        obs_mean = field.ensemble_mean().val.get_full_data()
 
         diff = data - obs_mean
         if self.data_covariance is not None:
