@@ -93,10 +93,9 @@ RUN python setup.py install
 WORKDIR ..
 
 #Hammurabi
-RUN git clone https://bitbucket.org/ricphy/hamx -b maintenance
+RUN git clone https://bitbucket.org/hammurabicode/hamx
 WORKDIR hamx
-RUN cp install/Makefile ./
-RUN make -f Makefile
+RUN make -f install/Makefile
 ENV HAMMURABI=/home/Downloads/hamx/bin/hamx
 WORKDIR ..
 
