@@ -49,7 +49,7 @@ Starting with a fresh Ubuntu installation move to a folder like
 IMAGINE provides a docker container based on Ubuntu:latest with all dependencies installed and preconfigured. 
 To build the docker container yourself, switch to the 'docker' directory and running
 
-        docker build --build-arg CACHE_DATE=2018-01-08 -t iftmpa/imagine:dev .
+        docker build --build-arg CACHE_DATE=2018-01-15 -t iftmpa/imagine:dev .
 		
 Alternatively, you can also fetch the docker container from docker hub
 
