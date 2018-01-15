@@ -17,7 +17,7 @@ Installation
 
 -   [Python](http://www.python.org/) (v2.7.x)
 -   [NumPy](http://www.numpy.org/)
-=   [NIFTy] (https://gitlab.mpcdf.mpg.de/ift/NIFTy) (installed automatically)
+-   [NIFTy] (https://gitlab.mpcdf.mpg.de/ift/NIFTy) (installed automatically)
 -   [D2O] (https://gitlab.mpcdf.mpg.de/ift/D2O) (installed automatically)
 -   [keepers] (https://gitlab.mpcdf.mpg.de/ift/keepers) (installed automatically)
 -   [simplejson] (https://github.com/simplejson/simplejson) (installed automatically)
