@@ -31,7 +31,7 @@ The current version of IMAGINE can be obtained by cloning the repository:
 ### Installation on Ubuntu
 
 This is for you if you want to install IMAGINE on your personal computer
-running with an Ubuntu-like linux system where you have root priviledges.
+running with an Ubuntu-like linux system where you have root privileges.
 Starting with a fresh Ubuntu installation move to a folder like
 `~/Downloads`:
 
