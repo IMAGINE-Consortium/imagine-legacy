@@ -30,7 +30,13 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 #HEALPIX
 RUN wget http://downloads.sourceforge.net/project/healpix/Healpix_3.31/Healpix_3.31_2016Aug26.tar.gz && tar xzf Healpix_3.31_2016Aug26.tar.gz 
 WORKDIR Healpix_3.31
-COPY healpy_config healpy_config
+RUN echo '4\n\
+	/sur/local/bin\n\
+	/usr/local/include\n\
+	4\n\
+	y\n\
+	0\n'\
+	> hlpx_config
 RUN  ./configure < healpy_config && make 
 WORKDIR ..
 #RUN [ -r /root/.healpix/3_31_Linux/config ] && . /root/.healpix/3_31_Linux/config
