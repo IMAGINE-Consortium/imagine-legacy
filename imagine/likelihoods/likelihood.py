@@ -16,4 +16,23 @@
 # IMAGINE is being developed at the Max-Planck-Institut fuer Astrophysik
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
-from prior import Prior
+import abc
+import nifty4 as ift
+
+
+class Likelihood(Loggable, object):
+    @abc.abstractmethod
+    def __call__(self, observables):
+        raise NotImplementedError
+
+    def _strip_data(self, data):
+        # if the first element in the domain tuple is unstructured, we must
+        # extract the data
+        if not hasattr(data, 'domain'):
+            return data
+
+        if isinstance(data.domain[0], ift.UnstructuredDomain):
+            data = data.val.get_full_data()[0]
+        else:
+            data = data.val.get_full_data()
+        return data

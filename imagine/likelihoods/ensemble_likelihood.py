@@ -17,10 +17,8 @@
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
 import numpy as np
-
-from nifty import Field
-
-from imagine.likelihoods.likelihood import Likelihood
+from nifty4 import Field
+from .likelihood import Likelihood
 
 
 class EnsembleLikelihood(Likelihood):

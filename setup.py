@@ -41,8 +41,8 @@ setup(name = "imagine",
       package_data={'imagine.observers.hammurapy': ['input/*'],},
       package_dir={"imagine": "imagine"},
       dependency_links=[
-        'git+https://gitlab.mpcdf.mpg.de/ift/nifty.git/@NIFTy_3#egg=ift_nifty-3.0.3'],
-      install_requires=['ift_nifty>=3.0.3', 'simplejson'],
+        'git+https://gitlab.mpcdf.mpg.de/ift/nifty.git/#egg=nifty4-4.2.0'],
+      install_requires=['nifty4>=4.2.0', 'simplejson'],
       zip_safe=False,
       classifiers=[
          "Development Status :: 4 - Beta",

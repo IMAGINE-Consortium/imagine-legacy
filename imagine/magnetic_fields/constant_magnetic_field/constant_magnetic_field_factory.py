@@ -31,10 +31,7 @@ class ConstantMagneticFieldFactory(MagneticFieldFactory):
 
     @property
     def _initial_parameter_defaults(self):
-        defaults = {'b_x': 0,
-                    'b_y': 0,
-                    'b_z': 0}
-        return defaults
+        return dict(b_x=0, b_y=0, b_z=0)
 
     @property
     def _initial_variable_to_parameter_mappings(self):
