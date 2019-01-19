@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 RUN apt-get update
-RUN apt-get install -y build-essential python python-pip python-dev git gfortran autoconf gsl-bin libgsl-dev wget unzip
+RUN apt-get install -y build-essential python python-pip python-dev git gfortran autoconf gsl-bin libgsl-dev wget unzip vim
 
 RUN pip install numpy scipy cython astropy ipython==5.3.0
  
@@ -15,17 +15,17 @@ RUN ./configure --prefix=/usr/local/ && make && make install
 WORKDIR ..
 
 #FFTW
-RUN wget http://www.fftw.org/fftw-3.3.5.tar.gz && tar xzf fftw-3.3.5.tar.gz
-WORKDIR fftw-3.3.5
+RUN wget http://www.fftw.org/fftw-3.3.8.tar.gz && tar xzf fftw-3.3.8.tar.gz
+WORKDIR fftw-3.3.8
 RUN ./configure --enable-threads --enable-openmp --enable-shared --prefix=/usr/local/ && make && make install
 WORKDIR ..
 
 #GSL
-RUN wget http://nl.mirror.babylon.network/gnu/gsl/gsl-2.3.tar.gz && tar xzf gsl-2.3.tar.gz
-WORKDIR gsl-2.3
-RUN ./configure --enable-shared --prefix=/usr/local/ && make && make install
-WORKDIR ..
-ENV LD_LIBRARY_PATH=/usr/local/lib
+#RUN wget http://nl.mirror.babylon.network/gnu/gsl/gsl-2.3.tar.gz && tar xzf gsl-2.3.tar.gz
+#WORKDIR gsl-2.3
+#RUN ./configure --enable-shared --prefix=/usr/local/ && make && make install
+#WORKDIR ..
+#ENV LD_LIBRARY_PATH=/usr/local/lib
 
 #HEALPIX
 RUN wget http://downloads.sourceforge.net/project/healpix/Healpix_3.31/Healpix_3.31_2016Aug26.tar.gz && tar xzf Healpix_3.31_2016Aug26.tar.gz 
@@ -37,9 +37,8 @@ RUN echo '4\n\
 	y\n\
 	0\n'\
 	> hlpx_config
-RUN  ./configure < healpy_config && make 
+RUN  ./configure -L < hlpx_config && make 
 WORKDIR ..
-#RUN [ -r /root/.healpix/3_31_Linux/config ] && . /root/.healpix/3_31_Linux/config
 ENV HEALPIX_TARGET optimized_gcc 
 ENV HEALPIX /home/Downloads/Healpix_3.31
 

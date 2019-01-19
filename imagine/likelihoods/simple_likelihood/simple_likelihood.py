@@ -37,7 +37,9 @@ class SimpleLikelihood(Likelihood):
 
         diff = data - obs_mean
         if self.data_covariance is not None:
-            right = diff/self.data_covariance
+            # modified by Jiaxin
+            # it is not a good practice to directly inverse matrices
+            right = np.linalg.solve (self.data_covariance,diff)
         else:
             right = diff
         return -0.5 * np.vdot(diff, right)
