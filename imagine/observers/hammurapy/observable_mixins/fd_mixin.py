@@ -17,11 +17,10 @@
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
 import xml.etree.ElementTree as et
-
 from .observable_mixin import ObservableMixin
 
-
 class FDMixin(ObservableMixin):
+    
     @property
     def obs_name(self):
         return 'fd'
@@ -31,7 +30,6 @@ class FDMixin(ObservableMixin):
         return ['fd']
 
     def update_parameter_xml(self, root):
-        element = et.Element('Faraday', {'cue': '1',
-                                         'filename': self.obs_name+'.fits'})
+        element = et.Element('Faraday', {'cue': '1', 'filename': self.obs_name+'.fits'})
         output = root.find('Obsout')
         output.append(element)

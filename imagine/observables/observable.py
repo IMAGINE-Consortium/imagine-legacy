@@ -18,18 +18,15 @@
 
 from nifty import Field, FieldArray
 
-
 class Observable(Field):
     def __init__(self, domain=None, val=None, dtype=None,
                  distribution_strategy=None, copy=False):
 
-        super(Observable, self).__init__(
-                                domain=domain,
-                                val=val,
-                                dtype=dtype,
-                                distribution_strategy=distribution_strategy,
-                                copy=copy)
-
+        super(Observable, self).__init__(domain=domain,
+                                         val=val,
+                                         dtype=dtype,
+                                         distribution_strategy=distribution_strategy,
+                                         copy=copy)
         assert(len(self.domain) == 2)
         assert(isinstance(self.domain[0], FieldArray))
 
@@ -42,8 +39,8 @@ class Observable(Field):
             return self._ensemble_mean
 
     def _to_hdf5(self, hdf5_group):
-        if hasattr(self, '_ensemble_mean'):
-            return_dict = {'ensemble_mean': self._ensemble_mean}
+        if hasattr(self, "_ensemble_mean"):
+            return_dict = {"ensemble_mean": self._ensemble_mean}
         else:
             return_dict = {}
         return_dict.update(
@@ -55,7 +52,7 @@ class Observable(Field):
         new_field = super(Observable, cls)._from_hdf5(hdf5_group=hdf5_group,
                                                       repository=repository)
         try:
-            observable_mean = repository.get('ensemble_mean', hdf5_group)
+            observable_mean = repository.get("ensemble_mean", hdf5_group)
             new_field._observable_mean = observable_mean
         except(KeyError):
             pass

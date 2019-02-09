@@ -17,14 +17,11 @@
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
 import numpy as np
-
-from imagine.magnetic_fields.magnetic_field.magnetic_field_factory \
-    import MagneticFieldFactory
-
+from imagine.magnetic_fields.magnetic_field.magnetic_field_factory import MagneticFieldFactory
 from constant_magnetic_field import ConstantMagneticField
 
-
 class ConstantMagneticFieldFactory(MagneticFieldFactory):
+    
     @property
     def magnetic_field_class(self):
         return ConstantMagneticField

@@ -16,13 +16,11 @@
 # IMAGINE is being developed at the Max-Planck-Institut fuer Astrophysik
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
-from imagine.magnetic_fields.magnetic_field.magnetic_field_factory \
-    import MagneticFieldFactory
-
+from imagine.magnetic_fields.magnetic_field.magnetic_field_factory import MagneticFieldFactory
 from wmap3yr_magnetic_field import WMAP3yrMagneticField
 
-
 class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
+    
     @property
     def magnetic_field_class(self):
         return WMAP3yrMagneticField
@@ -33,9 +31,13 @@ class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
                     'psi0': 27.0,
                     'psi1': 0.9,
                     'chi0': 25.0,
+                    # using ES random field generator in hammurabiX
                     'random_rms': 2.0,
                     'random_rho': 0.5,
-                    'random_a0': 1.7}
+                    'random_a0': 1.7,
+                    'random_k0': 0.5,
+                    'random_r0': 8.0,
+                    'random_z0': 1.0}
         return defaults
 
     @property
@@ -43,13 +45,15 @@ class WMAP3yrMagneticFieldFactory(MagneticFieldFactory):
         return self._generate_variable_to_parameter_mapping_defaults(n=3)
 
     def _generate_variable_to_parameter_mapping_defaults(self, n):
-        defaults = {
-            'b0': self._positive_interval(6.0, 1.9, n),  # b0 astro-ph/0603450
-            'psi0': self._positive_interval(27.0, 7.0, n),  # psi0 astro-ph/0603450
-            'psi1': self._positive_interval(0.9, 5.0, n),  # psi1 astro-ph/0603450
-            'chi0': self._positive_interval(25, 8.0, n),  # xsi0 astro-ph/0603450
-            'random_rms': self._positive_interval(2.0, 0.6, n),
-            'random_rho': self._positive_interval(0.5, 0.166, n),
-            'random_a0': self._positive_interval(1.7, 0.5, n)
-        }
+        defaults = {'b0': self._positive_interval(6.0, 1.9, n),  # b0 astro-ph/0603450
+                    'psi0': self._positive_interval(27.0, 7.0, n),  # psi0 astro-ph/0603450
+                    'psi1': self._positive_interval(0.9, 5.0, n),  # psi1 astro-ph/0603450
+                    'chi0': self._positive_interval(25, 8.0, n),  # xsi0 astro-ph/0603450
+                    'random_rms': self._positive_interval(2.0, 0.6, n),
+                    'random_rho': self._positive_interval(0.5, 0.166, n),
+                    'random_a0': self._positive_interval(1.7, 0.5, n),
+                    'random_k0': self._positive_interval(0.5, 0.15, n),
+                    'random_r0': self._positive_interval(8.0, 2.0, n),
+                    'random_z0': self._positive_interval(1.0, 0.3, n)
+                    }
         return defaults

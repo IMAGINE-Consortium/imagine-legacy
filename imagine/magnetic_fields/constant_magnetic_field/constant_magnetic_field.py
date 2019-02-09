@@ -18,8 +18,8 @@
 
 from imagine.magnetic_fields.magnetic_field import MagneticField
 
-
 class ConstantMagneticField(MagneticField):
+    
     @property
     def parameter_list(self):
         parameter_list = ['b_x', 'b_y', 'b_z']

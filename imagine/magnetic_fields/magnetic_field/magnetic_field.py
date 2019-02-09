@@ -17,9 +17,7 @@
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
 from mpi4py import MPI
-
 import simplejson as json
-
 import numpy as np
 
 from nifty import Field, FieldArray, RGSpace
@@ -29,17 +27,16 @@ comm = MPI.COMM_WORLD
 size = comm.size
 rank = comm.rank
 
-
 class MagneticField(Field):
+    
     def __init__(self, parameters={}, domain=None, val=None, dtype=None,
                  distribution_strategy=None, copy=False, random_seed=None):
 
-        super(MagneticField, self).__init__(
-                                domain=domain,
-                                val=val,
-                                dtype=dtype,
-                                distribution_strategy=distribution_strategy,
-                                copy=copy)
+        super(MagneticField, self).__init__(domain=domain,
+                                            val=val,
+                                            dtype=dtype,
+                                            distribution_strategy=distribution_strategy,
+                                            copy=copy)
 
         assert(len(self.domain) == 3)
         assert(isinstance(self.domain[0], FieldArray))
@@ -47,19 +44,17 @@ class MagneticField(Field):
         assert(isinstance(self.domain[2], FieldArray))
 
         self._parameters = {}
-        for p in self.descriptor_lookup:
+        for p in self.descriptor_lookup:#{
             self._parameters[p] = np.float(parameters[p])
-
-        casted_random_seed = distributed_data_object(
-                                global_shape=(self.shape[0],),
-                                dtype=np.int,
-                                distribution_strategy=distribution_strategy)
-
-        if random_seed is None:
+        #}
+        casted_random_seed = distributed_data_object(global_shape=(self.shape[0],),
+                                                     dtype=np.int,
+                                                     distribution_strategy=distribution_strategy)
+        if random_seed is None:#{
             random_seed = np.random.randint(np.uint32(-1)/3,
                                             size=self.shape[0])
             random_seed = comm.bcast(random_seed, root=0)
-
+        #}
         casted_random_seed[:] = random_seed
         self.random_seed = casted_random_seed
 
@@ -72,9 +67,9 @@ class MagneticField(Field):
         return self._parameters
 
     def set_val(self, new_val=None, copy=False):
-        if new_val is not None:
-            raise RuntimeError("Setting the field values explicitly is not "
-                               "supported by MagneticField.")
+        if new_val is not None:#{
+            raise RuntimeError("Setting the field values explicitly is not supported by MagneticField.")
+        #}
         self._val = self._create_field()
 
     def _to_hdf5(self, hdf5_group):

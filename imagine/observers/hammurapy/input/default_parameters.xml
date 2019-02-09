@@ -30,8 +30,8 @@
             <y value="0"/> <!-- kpc -->
             <z value="6"/> <!-- pc -->
         </SunPosition>
-        <!-- field grid -->
-        <Box>
+        <!-- GMF field grid -->
+        <Box_GMF>
             <!-- grid vertex number -->
             <nx value="800"/>
             <ny value="800"/>
@@ -43,20 +43,52 @@
             <y_max value="20.0"/> <!-- kpc -->
             <z_min value="-4.0"/> <!-- kpc -->
             <z_max value="4.0"/> <!-- kpc -->
-        </Box>
+        </Box_GMF>
+        <!-- FE field grid -->
+        <Box_FE>
+            <!-- grid vertex number -->
+            <nx value="800"/>
+            <ny value="800"/>
+            <nz value="160"/>
+            <!-- box limit, in Galactic-centric frame -->
+            <x_min value="-20.0"/> <!-- kpc -->
+            <x_max value="20.0"/> <!-- kpc -->
+            <y_min value="-20.0"/> <!-- kpc -->
+            <y_max value="20.0"/> <!-- kpc -->
+            <z_min value="-4.0"/> <!-- kpc -->
+            <z_max value="4.0"/> <!-- kpc -->
+        </Box_FE>
+        <!-- CRE field grid -->
+        <Box_CRE>
+            <nz value="80"/>
+            <nx value="80"/>
+            <ny value="80"/>
+            <nE value="80"/>
+            <x_min value="0.0"/> <!-- kpc -->
+            <x_max value="0.0"/> <!-- kpc -->
+            <y_min value="0.0"/> <!-- kpc -->
+            <y_max value="0.0"/> <!-- kpc -->
+            <z_min value="-4.0"/> <!-- kpc -->
+            <z_max value="4.0"/> <!-- kpc -->
+            <!-- E_max = E_min*exp(nE*E_fact) -->
+            <E_min value="0.1"/> <!-- GeV -->
+            <E_max value="100.0"/> <!-- GeV -->
+        </Box_CRE>
         <!-- LOS integration setting -->
-        <Integration>
-            <shell type="auto">
+        <Shell>
+            <layer type="auto">
                 <auto>
                     <shell_num value="1"/> <!-- total shell number -->
                     <nside_min value="32"/> <!-- inner most shell resolution -->
                 </auto>
                 <!-- set shell resolution from inside out -->
+                <!-- set shell cutting point from inside out -->
                 <manual> <!-- total shell number calculated automatically -->
+                    <cut value="0.5"/> <!-- cut at half of total shell radius -->
                     <nside value="32"/> <!-- inner most shell Nside -->
                     <nside value="16"/>
                 </manual>
-            </shell>
+            </layer>
             <nside_sim value="32"/> <!-- output map resolution -->
             <!-- maximum radius in earth/Galactic centric frame -->
             <ec_r_max value="30.0"/> <!-- kpc -->
@@ -64,16 +96,16 @@
             <!-- maximum height in galactic centric frame -->
             <gc_z_max value="10.0"/> <!-- kpc -->
             <!-- radial resolution -->
-            <ec_r_res value="0.5"/> <!-- kpc -->
+            <ec_r_res value="0.05"/> <!-- kpc -->
             <!-- galactic latitude lower limit -->
             <lat_lim value="0."/> <!-- [0,90] -->
-        </Integration>
+        </Shell>
     </Grid>
     
     <!-- magnetic fields -->
     <MagneticField>
         <!-- regular fields -->
-        <Regular type="Verify">
+        <Regular cue="1" type="Test">
             <!-- WMAP LSA -->
             <WMAP>
                 <b0 value="1.2"/> <!-- microG -->
@@ -123,46 +155,54 @@
                 <comp_p value="3"/> <!-- cutoff power -->
             </Jaffe>
             <!-- verification -->
-            <Verify>
+            <Test>
                 <b0 value="2.0"/> <!-- microG -->
                 <l0 value="70"/> <!-- deg -->
                 <r value="0.3"/>
-            </Verify>
+            </Test>
         </Regular>
-        <!-- turbulent fields -->
+        <!-- random/turbulent fields -->
+        <!-- seed should be non-negative int -->
+        <!-- seed=0, seed according to thread id and time -->
         <Random cue="0" type="Local" seed="0">
-            <!-- global anisotropy -->
-            <Global>
-                <rms value="0.8"/> <!-- RMS at k0 -->
-                <k0 value="0.5"/> <!-- cutoff, 1/(Lambda in kpc) -->
-                <a0 value="1.7"/> <!-- 5/3, Kolmogorov -->
-                <rho value="0.5"/> <!-- [0,1] -->
-                <!-- energy density rescaling -->
-                <r0 value="8.0"/> <!-- in kpc -->
-                <z0 value="1.0"/> <!-- in kpc -->
+            <!-- global generators -->
+            <Global type="ES">
+                <!-- Ensslin-Steininger method -->
+                <ES>
+                    <rms value="0.8"/> <!-- RMS -->
+                    <k0 value="0.5"/> <!-- cutoff, 1/(Lambda in kpc) -->
+                    <a0 value="1.7"/> <!-- 5/3, Kolmogorov -->
+                    <rho value="0.5"/> <!-- [0,1] -->
+                    <!-- energy density rescaling -->
+                    <r0 value="8.0"/> <!-- in kpc -->
+                    <z0 value="1.0"/> <!-- in kpc -->
+                </ES>
+                <!-- Jaffe method -->
+                <Jaffe>
+                    <!-- to be implemented -->
+                </Jaffe>
             </Global>
-            <!-- local turbulent -->
-            <Local>
-                <pa0  value="1"/> <!-- Alfven power norm at k0 -->
-                <pf0 value="1"/> <!-- fast power norm at k0 -->
-                <ps0 value="1"/> <!-- slow power norm at k0 -->
-                <aa0 value="1.7"/> <!-- Kolmogorov -->
-                <af0 value="1.5"/>
-                <as0 value="1.7"/>
-                <k0 value="0.5"/> <!-- cutoff, 1/(Lambda in kpc) -->
-                <beta value="0.1"/> <!-- plasma beta -->
-                <ma value="0.5"/> <!-- Alfven Mach number -->
+            <!-- local generators -->
+            <Local type="MHD">
+                <!-- compressive MHD approximation -->
+                <MHD>
+                    <pa0  value="1"/> <!-- Alfven power norm at k0 -->
+                    <pf0 value="1"/> <!-- fast power norm at k0 -->
+                    <ps0 value="1"/> <!-- slow power norm at k0 -->
+                    <aa0 value="1.7"/> <!-- Kolmogorov -->
+                    <af0 value="1.5"/>
+                    <as0 value="1.7"/>
+                    <k0 value="0.5"/> <!-- cutoff, 1/(Lambda in kpc) -->
+                    <beta value="0.1"/> <!-- plasma beta -->
+                    <ma value="0.5"/> <!-- Alfven Mach number -->
+                </MHD>
             </Local>
-            <!-- Jaffe turbulent -->
-            <Jaffe>
-                
-            </Jaffe>
         </Random>
     </MagneticField>
     
     <!-- free electron field -->
     <FreeElectron>
-        <Regular type="YMW16">
+        <Regular cue="1" type="Test">
             <!-- YMW16 -->
             <YMW16>
                 <Warp>
@@ -185,16 +225,31 @@
                 <!-- using HH14 SpiralArms -->
                 <SpiralArm>
                     <B2s value="4000"/>
-                    <Ele_arm_0 value="0.135000"/>
-                    <Ele_arm_1 value="0.129000"/>
-                    <Ele_arm_2 value="0.103000"/>
-                    <Ele_arm_3 value="0.116000"/>
-                    <Ele_arm_4 value="0.005700"/>
-                    <Wid_arm_0 value="300"/>
-                    <Wid_arm_1 value="500"/>
-                    <Wid_arm_2 value="300"/>
-                    <Wid_arm_3 value="500"/>
-                    <Wid_arm_4 value="300"/>
+                    <Ele_arm_0 value="0.135000"/> <!-- electron density norm, cm^-3 -->
+                    <Ele_arm_1 value="0.129000"/> <!-- electron density norm, cm^-3 -->
+                    <Ele_arm_2 value="0.103000"/> <!-- electron density norm, cm^-3 -->
+                    <Ele_arm_3 value="0.116000"/> <!-- electron density norm, cm^-3 -->
+                    <Ele_arm_4 value="0.005700"/> <!-- electron density norm, cm^-3 -->
+                    <Wid_arm_0 value="300"/> <!-- typical arm width, pc -->
+                    <Wid_arm_1 value="500"/> <!-- typical arm width, pc -->
+                    <Wid_arm_2 value="300"/> <!-- typical arm width, pc -->
+                    <Wid_arm_3 value="500"/> <!-- typical arm width, pc -->
+                    <Wid_arm_4 value="300"/> <!-- typical arm width, pc -->
+                    <Rref_arm_0 value="3.35"/> <!-- arm reference radius, kpc -->
+                    <Rref_arm_1 value="3.707"/> <!-- arm reference radius, kpc -->
+                    <Rref_arm_2 value="3.56"/> <!-- arm reference radius, kpc -->
+                    <Rref_arm_3 value="3.670"/> <!-- arm reference radius, kpc -->
+                    <Rref_arm_4 value="8.21"/> <!-- arm reference radius, kpc -->
+                    <Phiref_arm_0 value="44.4"/> <!-- arm reference azimuthal angle, deg -->
+                    <Phiref_arm_1 value="120.0"/> <!-- arm reference azimuthal angle, deg -->
+                    <Phiref_arm_2 value="218.6"/> <!-- arm reference azimuthal angle, deg -->
+                    <Phiref_arm_3 value="330.3"/> <!-- arm reference azimuthal angle, deg -->
+                    <Phiref_arm_4 value="55.1"/> <!-- arm reference azimuthal angle, deg -->
+                    <pitch_arm_0 value="11.43"/> <!-- arm pitch angle, deg -->
+                    <pitch_arm_1 value="9.84"/> <!-- arm pitch angle, deg -->
+                    <pitch_arm_2 value="10.38"/> <!-- arm pitch angle, deg -->
+                    <pitch_arm_3 value="10.54"/> <!-- arm pitch angle, deg -->
+                    <pitch_arm_4 value="2.77"/> <!-- arm pitch angle, deg -->
                     <Aa value="11680"/>
                     <Ka value="5.015"/>
                     <ncn value="2.4"/>
@@ -237,29 +292,35 @@
                 </LoopI>
             </YMW16>
             <!-- verification -->
-            <Verify>
+            <Test>
                 <n0 value="0.01"/> <!-- pccm -->
                 <r0 value="3.0"/> <!-- kpc -->
-            </Verify>
+            </Test>
         </Regular>
-        <!-- turbulent free electron -->
+        <!-- random/turbulent free electron -->
         <Random cue="0" type="Global" seed="0">
-            <Global>
-                <rms value="1.0"/>
-                <k0 value="2.0"/> <!-- cutoff 1/Lambda in kpc -->
-                <a0 value="-1.7"/>
-                <!-- field strength rescaling -->
-                <r0 value="8.0"/> <!-- in kpc -->
-                <z0 value="1.0"/> <!-- in kpc -->
+            <!-- global generator -->
+            <Global type="DFT">
+                <!-- default global generator -->
+                <DFT>
+                    <rms value="1.0"/>
+                    <k0 value="2.0"/> <!-- cutoff 1/Lambda in kpc -->
+                    <a0 value="-1.7"/>
+                    <!-- field strength rescaling -->
+                    <r0 value="8.0"/> <!-- in kpc -->
+                    <z0 value="1.0"/> <!-- in kpc -->
+                </DFT>
             </Global>
+            <!-- local generator -->
             <Local>
-                
+                <!-- to be implemented -->
             </Local>
         </Random>
     </FreeElectron>
     
     <!-- analytic/numeric CRE -->
-    <CRE type="Analytic">
+    <!-- flux norm comes with unit [GeV m^2 s Sr]^-1 -->
+    <CRE type="Test">
         <Analytic>
             <!-- CRE spectral index: -alpha+beta*r+theta*z, Galactic cylindric frame -->
             <alpha value="3.0"/>
@@ -272,35 +333,17 @@
             <j0 value="0.0217"/> <!-- local CRE flux norm factor @ E0 -->
         </Analytic>
         
-        <Numeric type="2D">
-            <!-- 2D Galactic-centric cylindric frame -->
-            <nr value="80"/> <!-- silent if type="3D" -->
-            <nz value="80"/>
-            <nx value="80"/> <!-- silent if type="2D" -->
-            <ny value="80"/> <!-- silent if type="2D" -->
-            
-            <!-- grid setting -->
-            <r_max value="20.0"/> <!-- kpc -->
-            <x_min value="0.0"/> <!-- kpc -->
-            <x_max value="0.0"/> <!-- kpc -->
-            <y_min value="0.0"/> <!-- kpc -->
-            <y_max value="0.0"/> <!-- kpc -->
-            <z_min value="-4.0"/> <!-- kpc -->
-            <z_max value="4.0"/> <!-- kpc -->
-            
-            <!-- E_max = E_min*exp(nE*E_fact) -->
-            <E_min value="0.1"/> <!-- GeV -->
-            <E_max value="100.0"/> <!-- GeV -->
-            <E_fact value="0.1"/> <!-- dimensionless -->
+        <Numeric>
+            <!-- info of numeric CRE in root->Grid->Box_CRE -->
         </Numeric>
         
         <!-- verification -->
-        <Verify>
+        <Test>
             <alpha value="3.0"/>
             <r0 value="3.0"/> <!-- cutoff radius, kpc -->
             <!-- by default, we choose AMS02 20.6GeV -->
             <E0 value="20.6"/> <!-- CRE kinetic energy reference, GeV -->
             <j0 value="0.0217"/> <!-- local CRE flux norm factor @ E0 -->
-        </Verify>
+        </Test>
     </CRE>
 </root>

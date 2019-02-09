@@ -18,13 +18,12 @@
 
 import abc
 import os
-
 import healpy
 
 from keepers import Loggable
 
-
 class ObservableMixin(Loggable, object):
+    
     @abc.abstractproperty
     def obs_name(self):
         raise NotImplementedError
@@ -42,10 +41,10 @@ class ObservableMixin(Loggable, object):
         map_list = self._read_fits_file(path=working_directory,
                                         name=self.obs_name + '.fits',
                                         nside=nside)
-
-        for i, map_component in enumerate(map_list):
+        for i, map_component in enumerate(map_list):#{
             temp_obs = observable_dict[self.component_names[i]]
             temp_obs.val.data[local_ensemble_index] = map_component
+        #}
 
     def _read_fits_file(self, path, name, nside):
         map_path = os.path.join(path, name)
@@ -53,8 +52,7 @@ class ObservableMixin(Loggable, object):
         i = 0
         while True:
             try:
-                loaded_map = healpy.read_map(map_path, verbose=False,
-                                             field=i)
+                loaded_map = healpy.read_map(map_path, verbose=False, field=i)
                 # loaded_map = healpy.ud_grade(loaded_map, nside_out=nside)
                 result_list += [loaded_map]
                 i += 1

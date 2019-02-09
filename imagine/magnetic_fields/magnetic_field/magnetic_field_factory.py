@@ -17,15 +17,10 @@
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
 import numpy as np
-
 from keepers import Loggable
-
 from imagine.carrier_mapper import unity_mapper
-
 from nifty import FieldArray, RGSpace
-
 from magnetic_field import MagneticField
-
 
 class MagneticFieldFactory(Loggable, object):
 
@@ -34,9 +29,7 @@ class MagneticFieldFactory(Loggable, object):
         self.box_dimensions = box_dimensions
         self.resolution = resolution
         self._parameter_defaults = self._initial_parameter_defaults
-        self._variable_to_parameter_mappings = \
-            self._initial_variable_to_parameter_mappings
-
+        self._variable_to_parameter_mappings = self._initial_variable_to_parameter_mappings
         distances = np.array(self.box_dimensions) / np.array(self.resolution)
         self._grid_space = RGSpace(shape=self.resolution,
                                    distances=distances)
@@ -44,9 +37,9 @@ class MagneticFieldFactory(Loggable, object):
         self._ensemble_cache = {}
 
     def _get_ensemble(self, ensemble_size):
-        if ensemble_size not in self._ensemble_cache:
-            self._ensemble_cache[ensemble_size] = \
-                                FieldArray(shape=(ensemble_size,))
+        if ensemble_size not in self._ensemble_cache:#{
+            self._ensemble_cache[ensemble_size] = FieldArray(shape=(ensemble_size,))
+        #}
         return self._ensemble_cache[ensemble_size]
 
     @property
@@ -56,8 +49,9 @@ class MagneticFieldFactory(Loggable, object):
     @box_dimensions.setter
     def box_dimensions(self, box_dimensions):
         dim = tuple(np.array(box_dimensions, dtype=np.float))
-        if len(dim) != 3:
+        if len(dim) != 3:#{
             raise ValueError("Input of box_dimensions must have length three.")
+        #}
         self._box_dimensions = dim
 
     @property
@@ -67,8 +61,9 @@ class MagneticFieldFactory(Loggable, object):
     @resolution.setter
     def resolution(self, resolution):
         resolution = tuple(np.array(resolution, dtype=np.int))
-        if len(resolution) != 3:
+        if len(resolution) != 3:#{
             raise ValueError("Input for resolution must have length three.")
+        #}
         self._resolution = resolution
 
     @property
@@ -104,10 +99,11 @@ class MagneticFieldFactory(Loggable, object):
     @property
     def variable_defaults(self):
         variable_defaults = {}
-        for parameter in self.parameter_defaults:
+        for parameter in self.parameter_defaults:#{
             low, high = self.variable_to_parameter_mappings[parameter]
             default = self.parameter_defaults[parameter]
             variable_defaults[parameter] = (default - low)/(high - low)
+        #}
         return variable_defaults
 
     @property
@@ -122,17 +118,17 @@ class MagneticFieldFactory(Loggable, object):
         value: [min, max]
         """
         for k, v in new_mapping.items():
-            if k in self._variable_to_parameter_mappings:
+            if k in self._variable_to_parameter_mappings:#{
                 key = str(k)
                 value = [np.float(v[0]), np.float(v[1])]
                 self._variable_to_parameter_mappings.update({key: value})
-                self.logger.debug("Updated variable_to_parameter_mapping %s "
-                                  "to %s" % (key, str(value)))
+                self.logger.debug("Updated variable_to_parameter_mapping %s to %s" % (key, str(value)))
+            #}
 
     def _map_variables_to_parameters(self, variables):
         parameter_dict = {}
         for variable_name in variables:
-            if variable_name in self.variable_to_parameter_mappings:
+            if variable_name in self.variable_to_parameter_mappings:#{
                 mapping = self.variable_to_parameter_mappings[variable_name]
                 mapped_variable = unity_mapper(variables[variable_name],
                                                a=mapping[0],
@@ -141,8 +137,10 @@ class MagneticFieldFactory(Loggable, object):
 #                                                 a=mapping[0],
 #                                                 m=mapping[1],
 #                                                 b=mapping[2])
-            else:
+            #}
+            else:#{
                 mapped_variable = np.float(variables[variable_name])
+            #}
             parameter_dict[variable_name] = mapped_variable
         return parameter_dict
 
@@ -150,16 +148,12 @@ class MagneticFieldFactory(Loggable, object):
         mapped_variables = self._map_variables_to_parameters(variables)
         work_parameters = self.parameter_defaults.copy()
         work_parameters.update(mapped_variables)
-
         domain = (self._get_ensemble(ensemble_size),
                   self._grid_space,
                   self._vector)
-
-        result_magnetic_field = self.magnetic_field_class(
-                                              domain=domain,
-                                              parameters=work_parameters,
-                                              distribution_strategy='equal',
-                                              random_seed=random_seed)
-        self.logger.debug("Generated magnetic field with work-parameters %s" %
-                          work_parameters)
+        result_magnetic_field = self.magnetic_field_class(domain=domain,
+                                                          parameters=work_parameters,
+                                                          distribution_strategy='equal',
+                                                          random_seed=random_seed)
+        self.logger.debug("Generated magnetic field with work-parameters %s" % work_parameters)
         return result_magnetic_field

@@ -17,11 +17,10 @@
 # and financially supported by the Studienstiftung des deutschen Volkes.
 
 import xml.etree.ElementTree as et
-
 from .observable_mixin import ObservableMixin
 
-
 class SyncMixin(ObservableMixin):
+    
     def __init__(self, frequency='23'):
         self.frequency = str(frequency)
 
