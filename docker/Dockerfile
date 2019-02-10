@@ -88,7 +88,7 @@ WORKDIR ..
 RUN pip install jupyter pandas matplotlib
 
 #IMAGINE
-RUN git clone https://gitlab.mpcdf.mpg.de/ift/IMAGINE.git -b master
+RUN git clone https://gitlab.mpcdf.mpg.de/ift/IMAGINE.git -b jxw
 WORKDIR IMAGINE
 RUN python setup.py install
 WORKDIR ..
